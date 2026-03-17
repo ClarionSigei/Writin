@@ -1,22 +1,19 @@
 import os
 import json
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file, abort
-from models import db, User, EssayOrder, GeneralRequest, BookClassInquiry, Payment, ArchivedOrder, OrderCounter, Notification, PasswordResetToken
+from models import db, User, EssayOrder, GeneralRequest, BookClassInquiry, Payment, ArchivedOrder, OrderCounter, Notification, PasswordResetToken, Message
 from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
 import secrets
 from functools import wraps
 
-# Create Flask app
 app = Flask(__name__)
 
-# Configuration from environment variables
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///database.db')
 app.config['UPLOAD_FOLDER'] = os.environ.get('UPLOAD_FOLDER', 'uploads')
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-# Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 db.init_app(app)
@@ -28,7 +25,6 @@ def calculate_price(pages, deadline):
     return pages * rate
 
 def generate_order_id(order_type):
-    """Generate a unique order ID: TYPE-global_counter (e.g., ESS-0000001)"""
     counter = OrderCounter.query.filter_by(order_type=order_type).first()
     if not counter:
         counter = OrderCounter(order_type=order_type, last_number=0)
@@ -73,9 +69,7 @@ def create_notification(user_id, type, title, message, link=None):
     db.session.commit()
 
 def send_email(to, subject, body):
-    """Simulated email – replace with actual email sending (e.g., Flask-Mail) in production."""
     print(f"\n--- EMAIL ---\nTo: {to}\nSubject: {subject}\nBody:\n{body}\n--- END ---\n")
-    # In production, use Flask-Mail or a third-party service like SendGrid.
 
 # ---------- Main Routes ----------
 @app.route('/')
@@ -150,7 +144,7 @@ def general():
     if request.method == 'POST':
         description = request.form['description']
         subject = request.form.get('subject', '')
-        deadline = request.form.get('deadline', '')
+        deadline = request.form['deadline']  # now required
 
         guest_email = None
         if not user:
@@ -200,7 +194,7 @@ def book_class():
     if request.method == 'POST':
         subject = request.form['subject']
         level = request.form['level']
-        assignments_count = int(request.form['assignments_count'])
+        assignments_count = int(request.form['assignments_count'])  # field kept
         frequency = request.form.get('frequency', '')
         details = request.form.get('details', '')
 
@@ -309,7 +303,6 @@ def payment_proof():
         )
         db.session.add(payment)
         
-        # Update order status to payment_pending (optional)
         if order_type == 'essay':
             order.status = 'payment_pending'
         elif order_type == 'general':
@@ -469,12 +462,51 @@ def view_order(order_type, order_id):
         return render_template('order_detail.html', order=order, type='essay')
     elif order_type == 'general':
         order = GeneralRequest.query.filter_by(order_id_string=order_id, user_id=user.id).first_or_404()
-        return render_template('order_detail.html', order=order, type='general')
+        messages = Message.query.filter_by(order_type='general', order_id=order.id).order_by(Message.created_at).all()
+        return render_template('order_detail.html', order=order, type='general', messages=messages)
     elif order_type == 'book':
         order = BookClassInquiry.query.filter_by(order_id_string=order_id, user_id=user.id).first_or_404()
-        return render_template('order_detail.html', order=order, type='book')
+        messages = Message.query.filter_by(order_type='book', order_id=order.id).order_by(Message.created_at).all()
+        return render_template('order_detail.html', order=order, type='book', messages=messages)
     else:
         abort(404)
+
+@app.route('/send-message/<order_type>/<int:order_id>', methods=['POST'])
+@login_required
+def send_message(order_type, order_id):
+    user = get_current_user()
+    content = request.form.get('message')
+    if not content:
+        flash('Message cannot be empty.', 'danger')
+        return redirect(request.referrer)
+    
+    # Verify ownership
+    order = None
+    if order_type == 'general':
+        order = GeneralRequest.query.get_or_404(order_id)
+    elif order_type == 'book':
+        order = BookClassInquiry.query.get_or_404(order_id)
+    else:
+        abort(400)
+    
+    if order.user_id != user.id:
+        abort(403)
+    
+    message = Message(
+        order_type=order_type,
+        order_id=order_id,
+        sender_type='user',
+        content=content
+    )
+    db.session.add(message)
+    db.session.commit()
+    
+    # Notify admin? (optional)
+    send_email('admin@example.com', f"New message from user on {order.order_id_string}",
+               f"User sent: {content}")
+    
+    flash('Message sent.', 'success')
+    return redirect(request.referrer)
 
 @app.route('/accept-quote/<order_type>/<int:order_id>')
 @login_required
@@ -558,6 +590,7 @@ def track_order():
                 if user:
                     user_email = user.email
             if (order.guest_email and order.guest_email.lower() == email.lower()) or (user_email and user_email.lower() == email.lower()):
+                # For general and book, we don't show messages on public tracking
                 return render_template('order_status.html', order=order, order_type=order_type)
         
         flash('Order not found or email does not match.', 'danger')
@@ -616,40 +649,71 @@ def admin_order(order_id):
 @admin_required
 def admin_general(req_id):
     req = GeneralRequest.query.get_or_404(req_id)
+    messages = Message.query.filter_by(order_type='general', order_id=req.id).order_by(Message.created_at).all()
     if request.method == 'POST':
-        new_status = request.form['status']
-        req.status = new_status
-        if new_status == 'quoted':
-            quoted_price = request.form.get('quoted_price')
-            if quoted_price:
-                req.quoted_price = float(quoted_price)
-        if 'completed_file' in request.files:
-            file = request.files['completed_file']
-            if file.filename:
-                filename = secure_filename(f"general_{req_id}_{file.filename}")
-                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                file.save(filepath)
-                req.completed_file = filepath
-        db.session.commit()
-        flash('Request updated', 'success')
-        return redirect(url_for('admin_general', req_id=req_id))
-    return render_template('admin/general_detail.html', request=req, User=User)
+        if 'message' in request.form:
+            # Admin sending a message
+            content = request.form['message']
+            if content:
+                msg = Message(
+                    order_type='general',
+                    order_id=req.id,
+                    sender_type='admin',
+                    content=content
+                )
+                db.session.add(msg)
+                db.session.commit()
+                flash('Message sent.', 'success')
+                return redirect(url_for('admin_general', req_id=req_id))
+        else:
+            new_status = request.form['status']
+            req.status = new_status
+            if new_status == 'quoted':
+                quoted_price = request.form.get('quoted_price')
+                if quoted_price:
+                    req.quoted_price = float(quoted_price)
+            if 'completed_file' in request.files:
+                file = request.files['completed_file']
+                if file.filename:
+                    filename = secure_filename(f"general_{req_id}_{file.filename}")
+                    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    file.save(filepath)
+                    req.completed_file = filepath
+            db.session.commit()
+            flash('Request updated', 'success')
+            return redirect(url_for('admin_general', req_id=req_id))
+    return render_template('admin/general_detail.html', request=req, User=User, messages=messages)
 
 @app.route('/admin/inquiry/<int:inquiry_id>', methods=['GET', 'POST'])
 @admin_required
 def admin_inquiry(inquiry_id):
     inquiry = BookClassInquiry.query.get_or_404(inquiry_id)
+    messages = Message.query.filter_by(order_type='book', order_id=inquiry.id).order_by(Message.created_at).all()
     if request.method == 'POST':
-        new_status = request.form['status']
-        inquiry.status = new_status
-        if new_status == 'quoted':
-            quoted_price = request.form.get('quoted_price')
-            if quoted_price:
-                inquiry.quoted_price = float(quoted_price)
-        db.session.commit()
-        flash('Inquiry updated', 'success')
-        return redirect(url_for('admin_inquiry', inquiry_id=inquiry_id))
-    return render_template('admin/inquiry_detail.html', inquiry=inquiry, User=User)
+        if 'message' in request.form:
+            content = request.form['message']
+            if content:
+                msg = Message(
+                    order_type='book',
+                    order_id=inquiry.id,
+                    sender_type='admin',
+                    content=content
+                )
+                db.session.add(msg)
+                db.session.commit()
+                flash('Message sent.', 'success')
+                return redirect(url_for('admin_inquiry', inquiry_id=inquiry_id))
+        else:
+            new_status = request.form['status']
+            inquiry.status = new_status
+            if new_status == 'quoted':
+                quoted_price = request.form.get('quoted_price')
+                if quoted_price:
+                    inquiry.quoted_price = float(quoted_price)
+            db.session.commit()
+            flash('Inquiry updated', 'success')
+            return redirect(url_for('admin_inquiry', inquiry_id=inquiry_id))
+    return render_template('admin/inquiry_detail.html', inquiry=inquiry, User=User, messages=messages)
 
 @app.route('/admin/payments')
 @admin_required
@@ -860,7 +924,7 @@ def privacy():
 def terms():
     return render_template('terms.html')
 
-# ---------- Error Handlers (optional) ----------
+# ---------- Error Handlers ----------
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
@@ -872,5 +936,4 @@ def internal_server_error(e):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    # In production, debug=False, host='0.0.0.0', port=5000
     app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
