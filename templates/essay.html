@@ -137,49 +137,4 @@
         </div>
     </form>
 </div>
-
-<script>
-    function calculateTotal() {
-        const pages = parseInt(document.getElementById('pages').value) || 1;
-        const deadline = document.getElementById('deadline').value;
-        const rates = {'0-2': 12, '3-4': 10, '5+': 8};
-        const rate = rates[deadline] || 8;
-        const total = pages * rate;
-        document.getElementById('totalPrice').innerText = '$' + total.toFixed(2);
-    }
-    document.getElementById('pages').addEventListener('input', calculateTotal);
-    document.getElementById('deadline').addEventListener('change', calculateTotal);
-
-    // Conditional instruction fields
-    const instructionRadios = document.querySelectorAll('input[name="instruction_type"]');
-    const fileField = document.getElementById('file-field');
-    const linkField = document.getElementById('link-field');
-    const textField = document.getElementById('text-field');
-    
-    // File input display - with null check
-    const instructionsFile = document.getElementById('instructions_file');
-    if (instructionsFile) {
-        instructionsFile.addEventListener('change', function(e) {
-            const fileName = e.target.files[0] ? e.target.files[0].name : 'Choose file...';
-            const customSpan = document.querySelector('#file-field .file-custom');
-            if (customSpan) customSpan.textContent = fileName;
-        });
-    }
-
-    instructionRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (fileField) fileField.style.display = 'none';
-            if (linkField) linkField.style.display = 'none';
-            if (textField) textField.style.display = 'none';
-            
-            if (this.value === 'file' && fileField) {
-                fileField.style.display = 'block';
-            } else if (this.value === 'link' && linkField) {
-                linkField.style.display = 'block';
-            } else if (this.value === 'text' && textField) {
-                textField.style.display = 'block';
-            }
-        });
-    });
-</script>
 {% endblock %}

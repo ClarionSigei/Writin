@@ -15,14 +15,16 @@ if (savedTheme === 'dark') {
     }
 }
 
-themeToggle.addEventListener('click', () => {
-    body.classList.toggle('dark-theme');
-    if (body.classList.contains('dark-theme')) {
-        localStorage.setItem('theme', 'dark');
-    } else {
-        localStorage.setItem('theme', 'light');
-    }
-});
+if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-theme');
+        if (body.classList.contains('dark-theme')) {
+            localStorage.setItem('theme', 'dark');
+        } else {
+            localStorage.setItem('theme', 'light');
+        }
+    });
+}
 
 // Color theme selector
 const themeSelector = document.getElementById('theme-selector');
@@ -31,18 +33,19 @@ const savedColorTheme = localStorage.getItem('color-theme') || 'default';
 // Apply saved color theme
 if (savedColorTheme !== 'default') {
     body.classList.add(`theme-${savedColorTheme}`);
-    themeSelector.value = savedColorTheme;
+    if (themeSelector) themeSelector.value = savedColorTheme;
 }
 
-themeSelector.addEventListener('change', function() {
-    // Remove all theme classes
-    const themeClasses = ['theme-purple', 'theme-cyber', 'theme-magenta', 'theme-teal', 'theme-amber', 'theme-red', 'theme-mono'];
-    body.classList.remove(...themeClasses);
-    if (this.value !== 'default') {
-        body.classList.add(`theme-${this.value}`);
-    }
-    localStorage.setItem('color-theme', this.value);
-});
+if (themeSelector) {
+    themeSelector.addEventListener('change', function() {
+        const themeClasses = ['theme-purple', 'theme-cyber', 'theme-magenta', 'theme-teal', 'theme-amber', 'theme-red', 'theme-mono'];
+        body.classList.remove(...themeClasses);
+        if (this.value !== 'default') {
+            body.classList.add(`theme-${this.value}`);
+        }
+        localStorage.setItem('color-theme', this.value);
+    });
+}
 
 // Mobile menu toggle
 const hamburger = document.getElementById('hamburger');
@@ -89,55 +92,7 @@ document.querySelectorAll('input[type="file"]').forEach(input => {
     });
 });
 
-// Conditional fields for essay form (if present)
-const instructionRadios = document.querySelectorAll('input[name="instruction_type"]');
-if (instructionRadios.length) {
-    const fileField = document.getElementById('file-field');
-    const linkField = document.getElementById('link-field');
-    const textField = document.getElementById('text-field');
-    
-    instructionRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (fileField) fileField.style.display = 'none';
-            if (linkField) linkField.style.display = 'none';
-            if (textField) textField.style.display = 'none';
-            
-            if (this.value === 'file' && fileField) {
-                fileField.style.display = 'block';
-            } else if (this.value === 'link' && linkField) {
-                linkField.style.display = 'block';
-            } else if (this.value === 'text' && textField) {
-                textField.style.display = 'block';
-            }
-        });
-    });
-}
-
-// Conditional fields for general form (if present)
-const submissionRadios = document.querySelectorAll('input[name="submission_type"]');
-if (submissionRadios.length) {
-    const fileSubField = document.getElementById('file-sub-field');
-    const linkSubField = document.getElementById('link-sub-field');
-    const textSubField = document.getElementById('text-sub-field');
-    
-    submissionRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (fileSubField) fileSubField.style.display = 'none';
-            if (linkSubField) linkSubField.style.display = 'none';
-            if (textSubField) textSubField.style.display = 'none';
-            
-            if (this.value === 'file' && fileSubField) {
-                fileSubField.style.display = 'block';
-            } else if (this.value === 'link' && linkSubField) {
-                linkSubField.style.display = 'block';
-            } else if (this.value === 'text' && textSubField) {
-                textSubField.style.display = 'block';
-            }
-        });
-    });
-}
-
-// Price calculator for essay form (if present)
+// Essay page specific: price calculator and conditional fields
 const pagesInput = document.getElementById('pages');
 const deadlineSelect = document.getElementById('deadline');
 const totalPriceSpan = document.getElementById('totalPrice');
@@ -158,6 +113,50 @@ if (pagesInput && deadlineSelect && totalPriceSpan) {
     deadlineSelect.addEventListener('change', calculateTotal);
     calculateTotal(); // initial
 }
+
+// Conditional fields for essay form
+const instructionRadios = document.querySelectorAll('input[name="instruction_type"]');
+const fileField = document.getElementById('file-field');
+const linkField = document.getElementById('link-field');
+const textField = document.getElementById('text-field');
+
+instructionRadios.forEach(radio => {
+    radio.addEventListener('change', function() {
+        if (fileField) fileField.style.display = 'none';
+        if (linkField) linkField.style.display = 'none';
+        if (textField) textField.style.display = 'none';
+
+        if (this.value === 'file' && fileField) {
+            fileField.style.display = 'block';
+        } else if (this.value === 'link' && linkField) {
+            linkField.style.display = 'block';
+        } else if (this.value === 'text' && textField) {
+            textField.style.display = 'block';
+        }
+    });
+});
+
+// Conditional fields for general form
+const submissionRadios = document.querySelectorAll('input[name="submission_type"]');
+const fileSubField = document.getElementById('file-sub-field');
+const linkSubField = document.getElementById('link-sub-field');
+const textSubField = document.getElementById('text-sub-field');
+
+submissionRadios.forEach(radio => {
+    radio.addEventListener('change', function() {
+        if (fileSubField) fileSubField.style.display = 'none';
+        if (linkSubField) linkSubField.style.display = 'none';
+        if (textSubField) textSubField.style.display = 'none';
+
+        if (this.value === 'file' && fileSubField) {
+            fileSubField.style.display = 'block';
+        } else if (this.value === 'link' && linkSubField) {
+            linkSubField.style.display = 'block';
+        } else if (this.value === 'text' && textSubField) {
+            textSubField.style.display = 'block';
+        }
+    });
+});
 
 // Confirm deletion in admin
 document.querySelectorAll('.delete-form').forEach(form => {

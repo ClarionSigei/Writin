@@ -79,37 +79,4 @@
         </div>
     </form>
 </div>
-
-<script>
-    const submissionRadios = document.querySelectorAll('input[name="submission_type"]');
-    const fileSubField = document.getElementById('file-sub-field');
-    const linkSubField = document.getElementById('link-sub-field');
-    const textSubField = document.getElementById('text-sub-field');
-    
-    // File input display - with null check
-    const fileInput = document.getElementById('file');
-    if (fileInput) {
-        fileInput.addEventListener('change', function(e) {
-            const fileName = e.target.files[0] ? e.target.files[0].name : 'Choose file...';
-            const customSpan = document.querySelector('#file-sub-field .file-custom');
-            if (customSpan) customSpan.textContent = fileName;
-        });
-    }
-
-    submissionRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (fileSubField) fileSubField.style.display = 'none';
-            if (linkSubField) linkSubField.style.display = 'none';
-            if (textSubField) textSubField.style.display = 'none';
-            
-            if (this.value === 'file' && fileSubField) {
-                fileSubField.style.display = 'block';
-            } else if (this.value === 'link' && linkSubField) {
-                linkSubField.style.display = 'block';
-            } else if (this.value === 'text' && textSubField) {
-                textSubField.style.display = 'block';
-            }
-        });
-    });
-</script>
 {% endblock %}
