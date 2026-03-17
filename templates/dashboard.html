@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+    <h1><i class="fas fa-tachometer-alt"></i> {{ user.full_name }}'s Dashboard</h1>
+    <p>Email: {{ user.email }}</p>
+</section>
+
+<!-- Notifications -->
+{% if notifications %}
+<section class="notifications">
+    <h2>Notifications</h2>
+    {% for notif in notifications %}
+    <div class="notification-card">
+        <p><strong>{{ notif.title }}</strong> - {{ notif.message }}</p>
+        <small>{{ notif.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+        <a href="{{ url_for('mark_notification_read', notif_id=notif.id) }}" class="btn btn-small">Mark Read</a>
+    </div>
+    {% endfor %}
+</section>
+{% endif %}
+
+<!-- Orders -->
+<section class="dashboard-orders">
+    <h2>Your Orders</h2>
+    
+    {% if essays or generals or books %}
+        {% if essays %}
+        <h3>Essays</h3>
+        <div class="table-responsive">
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Date</th>
+                        <th>Pages</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in essays %}
+                    <tr>
+                        <td>{{ order.order_id_string }}</td>
+                        <td>{{ order.created_at.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ order.pages }}</td>
+                        <td>${{ order.total }}</td>
+                        <td>{{ order.status }}</td>
+                        <td><a href="{{ url_for('view_order', order_type='essay', order_id=order.order_id_string) }}" class="btn btn-small">View</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if generals %}
+        <h3>General Requests</h3>
+        <div class="table-responsive">
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Date</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in generals %}
+                    <tr>
+                        <td>{{ req.order_id_string }}</td>
+                        <td>{{ req.created_at.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ req.subject or 'N/A' }}</td>
+                        <td>{{ req.status }}</td>
+                        <td><a href="{{ url_for('view_order', order_type='general', order_id=req.order_id_string) }}" class="btn btn-small">View</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if books %}
+        <h3>Book Class Inquiries</h3>
+        <div class="table-responsive">
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Inquiry ID</th>
+                        <th>Date</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inquiry in books %}
+                    <tr>
+                        <td>{{ inquiry.order_id_string }}</td>
+                        <td>{{ inquiry.created_at.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ inquiry.subject }}</td>
+                        <td>{{ inquiry.status }}</td>
+                        <td><a href="{{ url_for('view_order', order_type='book', order_id=inquiry.order_id_string) }}" class="btn btn-small">View</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    {% else %}
+        <p>You have no orders yet. <a href="{{ url_for('essay') }}">Place your first order</a>.</p>
+    {% endif %}
+</section>
+{% endblock %}

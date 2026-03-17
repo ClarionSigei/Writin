@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Expert Academic Writing Assistance</h1>
+        <p>Essays, assignments, test prep, and full-semester support. Fast, reliable, and confidential.</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('essay') }}" class="btn btn-primary">Order an Essay</a>
+            <a href="{{ url_for('general') }}" class="btn btn-secondary">Get a Quote</a>
+        </div>
+    </div>
+    <div class="hero-image">
+        <i class="fas fa-graduation-cap"></i>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section class="services">
+    <h2>Our Services</h2>
+    <div class="cards">
+        <div class="card">
+            <i class="fas fa-file-alt"></i>
+            <h3>Essay Writing</h3>
+            <p>Fixed pricing based on deadline. 50% upfront, pay the rest upon completion.</p>
+            <a href="{{ url_for('essay') }}" class="btn btn-primary">Order Now</a>
+        </div>
+        <div class="card">
+            <i class="fas fa-flask"></i>
+            <h3>General Assignment</h3>
+            <p>Custom quotes for any subject – math, science, programming, and more.</p>
+            <a href="{{ url_for('general') }}" class="btn btn-primary">Request Quote</a>
+        </div>
+        <div class="card">
+            <i class="fas fa-calendar-alt"></i>
+            <h3>Book a Class</h3>
+            <p>Long-term assistance for a whole semester. Tailor-made plans.</p>
+            <a href="{{ url_for('book_class') }}" class="btn btn-primary">Inquire Now</a>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works">
+    <h2>How It Works</h2>
+    <div class="steps">
+        <div class="step">
+            <div class="step-number">1</div>
+            <h4>Submit Details</h4>
+            <p>Tell us what you need – essay, assignment, or class support.</p>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <h4>Pay 50% (Essays) or Get Quote</h4>
+            <p>Secure your order with a partial payment or receive a custom quote.</p>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <h4>We Deliver</h4>
+            <p>Download your completed work after final payment.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Trust Indicators -->
+<section class="trust">
+    <div class="stats">
+        <div class="stat">
+            <span class="stat-number">500+</span>
+            <span class="stat-label">Assignments Completed</span>
+        </div>
+        <div class="stat">
+            <span class="stat-number">4.9/5</span>
+            <span class="stat-label">Client Rating</span>
+        </div>
+        <div class="stat">
+            <span class="stat-number">24/7</span>
+            <span class="stat-label">Support</span>
+        </div>
+    </div>
+    <div class="payment-methods">
+        <p>We Accept:</p>
+        <i class="fab fa-paypal"></i>
+        <i class="fab fa-cashapp"></i>
+        <i class="fab fa-binance"></i>
+    </div>
+</section>
+{% endblock %}

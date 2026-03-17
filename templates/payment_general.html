@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+    <h1>Payment for General Request</h1>
+</section>
+<div class="form-container" style="max-width: 500px;">
+    <p>Amount due: <strong>${{ amount }}</strong></p>
+    <p>Choose your payment method and complete the payment. Then submit your proof below.</p>
+    <div class="payment-methods-list">
+        <p><i class="fab fa-paypal"></i> PayPal: <a href="https://paypal.me/yourlink" target="_blank">paypal.me/yourlink</a></p>
+        <p><i class="fab fa-cashapp"></i> CashApp: $YourCashtag</p>
+        <p><i class="fab fa-binance"></i> Binance Pay: ID 123456</p>
+    </div>
+    <a href="{{ url_for('payment_proof', order_type='general', order_id=order_id, payment_type='full') }}" class="btn btn-primary">I Have Paid – Submit Proof</a>
+</div>
+{% endblock %}

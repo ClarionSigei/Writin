@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+    <h1><i class="fas fa-flask"></i> Request a Quote for General Assignment</h1>
+    <p>Tell us about your assignment and we'll get back to you with a custom quote.</p>
+</section>
+
+<div class="form-container">
+    <form method="post" enctype="multipart/form-data" class="styled-form">
+        <div class="form-row">
+            <label for="description">Assignment Description <span class="required">*</span></label>
+            <textarea name="description" id="description" rows="5" placeholder="Describe your assignment in detail..." required></textarea>
+        </div>
+
+        <!-- Submission Method Selection -->
+        <div class="form-row">
+            <label>How would you like to provide your assignment?</label>
+            <div class="radio-group submission-type">
+                <label class="radio-label">
+                    <input type="radio" name="submission_type" value="file" id="sub-file-radio"> <i class="fas fa-upload"></i> Upload File
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="submission_type" value="link" id="sub-link-radio"> <i class="fas fa-link"></i> Provide Link
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="submission_type" value="text" id="sub-text-radio"> <i class="fas fa-pencil-alt"></i> Paste Text
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="submission_type" value="none" id="sub-none-radio" checked> <i class="fas fa-ban"></i> Description Only
+                </label>
+            </div>
+        </div>
+
+        <!-- Conditional Fields -->
+        <div class="submission-field" id="file-sub-field" style="display: none;">
+            <div class="form-row">
+                <label for="file">Upload File</label>
+                <div class="file-input-wrapper">
+                    <input type="file" name="file" id="file" accept=".pdf,.doc,.docx,.txt,.jpg,.png">
+                    <span class="file-custom">Choose file...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="submission-field" id="link-sub-field" style="display: none;">
+            <div class="form-row">
+                <label for="link">Provide a Link</label>
+                <input type="url" name="link" id="link" placeholder="https://...">
+            </div>
+        </div>
+
+        <div class="submission-field" id="text-sub-field" style="display: none;">
+            <div class="form-row">
+                <label for="text">Paste Text</label>
+                <textarea name="text" id="text" rows="5" placeholder="Paste your assignment text here..."></textarea>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <label for="subject">Subject (optional)</label>
+            <input type="text" name="subject" id="subject" placeholder="e.g., Mathematics, Physics">
+        </div>
+
+        <div class="form-row">
+            <label for="deadline">Preferred Deadline (optional)</label>
+            <input type="text" name="deadline" id="deadline" placeholder="e.g., 3 days, next week">
+        </div>
+
+        <!-- Guest email field (shown only if user not logged in) -->
+        {% if not user %}
+        <div class="form-row">
+            <label for="guest_email">Your Email (for tracking) <span class="required">*</span></label>
+            <input type="email" name="guest_email" id="guest_email" required placeholder="you@example.com">
+        </div>
+        {% endif %}
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit Request</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Conditional submission fields
+    const submissionRadios = document.querySelectorAll('input[name="submission_type"]');
+    const fileSubField = document.getElementById('file-sub-field');
+    const linkSubField = document.getElementById('link-sub-field');
+    const textSubField = document.getElementById('text-sub-field');
+    
+    // File input display
+    document.getElementById('file').addEventListener('change', function(e) {
+        const fileName = e.target.files[0] ? e.target.files[0].name : 'Choose file...';
+        document.querySelectorAll('#file-sub-field .file-custom').forEach(el => {
+            el.textContent = fileName;
+        });
+    });
+
+    submissionRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Hide all fields
+            fileSubField.style.display = 'none';
+            linkSubField.style.display = 'none';
+            textSubField.style.display = 'none';
+            
+            // Show selected field
+            if (this.value === 'file') {
+                fileSubField.style.display = 'block';
+            } else if (this.value === 'link') {
+                linkSubField.style.display = 'block';
+            } else if (this.value === 'text') {
+                textSubField.style.display = 'block';
+            }
+        });
+    });
+</script>
+{% endblock %}

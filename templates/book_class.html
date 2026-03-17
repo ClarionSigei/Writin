@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+    <h1><i class="fas fa-calendar-alt"></i> Book a Class (Semester Assistance)</h1>
+    <p>Get personalized support for an entire course. Tell us about your needs and we'll create a custom plan.</p>
+</section>
+
+<div class="form-container">
+    <form method="post" class="styled-form">
+        <div class="form-row">
+            <label for="subject">Subject/Course Name <span class="required">*</span></label>
+            <input type="text" name="subject" id="subject" placeholder="e.g., Calculus II, Organic Chemistry" required>
+        </div>
+
+        <div class="form-row">
+            <label for="level">Course Level <span class="required">*</span></label>
+            <select name="level" id="level" required>
+                <option value="">-- Select Level --</option>
+                <option value="undergraduate">Undergraduate</option>
+                <option value="graduate">Graduate</option>
+                <option value="phd">PhD</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <label for="assignments_count">Approx. Number of Assignments/Tests <span class="required">*</span></label>
+            <input type="number" name="assignments_count" id="assignments_count" min="1" required>
+        </div>
+
+        <div class="form-row">
+            <label for="frequency">Preferred Communication Frequency (optional)</label>
+            <input type="text" name="frequency" id="frequency" placeholder="e.g., weekly, as needed">
+        </div>
+
+        <div class="form-row">
+            <label for="details">Additional Details (optional)</label>
+            <textarea name="details" id="details" rows="4" placeholder="Any specific requirements or notes..."></textarea>
+        </div>
+
+        <!-- Guest email field (shown only if user not logged in) -->
+        {% if not user %}
+        <div class="form-row">
+            <label for="guest_email">Your Email (for tracking) <span class="required">*</span></label>
+            <input type="email" name="guest_email" id="guest_email" required placeholder="you@example.com">
+        </div>
+        {% endif %}
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit Inquiry</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

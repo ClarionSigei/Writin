@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Write Choice Docs – Terms & Conditions</title>
+  <style>
+    /* ----- CSS variables (light mode default) ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-body: #f8fafc;
+      --bg-surface: #ffffff;
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --accent: #1e3c72;        /* deep navy – calm & professional */
+      --accent-light: #3b5998;
+      --border-light: #e2e8f0;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+      --toggle-bg: #e2e8f0;
+      --toggle-fg: #1e293b;
+      --code-bg: #f1f5f9;
+    }
+
+    /* ----- dark theme overrides ----- */
+    body.dark {
+      --bg-body: #0b1120;
+      --bg-surface: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --accent: #60a5fa;         /* lighter blue for dark mode – accessible */
+      --accent-light: #90caf9;
+      --border-light: #334155;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+      --toggle-bg: #334155;
+      --toggle-fg: #facc15;
+      --code-bg: #0f172a;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-primary);
+      line-height: 1.6;
+      transition: background-color 0.3s ease, color 0.2s ease;
+      padding: 2rem 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      background-color: var(--bg-surface);
+      border-radius: 2rem;
+      box-shadow: var(--shadow);
+      padding: 2.5rem 2rem;
+      border: 1px solid var(--border-light);
+      transition: background-color 0.3s ease, border-color 0.2s;
+    }
+
+    /* ----- header with title + theme toggle ----- */
+    .doc-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid var(--border-light);
+      padding-bottom: 1.25rem;
+    }
+
+    .doc-header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(145deg, var(--accent), var(--accent-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+    }
+
+    /* theme toggle button */
+    .theme-toggle {
+      background: var(--toggle-bg);
+      border: none;
+      border-radius: 40px;
+      padding: 0.5rem 1.2rem;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--toggle-fg);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.2s, transform 0.1s;
+      border: 1px solid var(--border-light);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .theme-toggle:hover {
+      background: var(--border-light);
+      transform: scale(1.02);
+    }
+
+    .theme-toggle:active {
+      transform: scale(0.98);
+    }
+
+    .theme-toggle span {
+      font-size: 1.3rem;
+      line-height: 1;
+    }
+
+    /* ----- typography & spacing ----- */
+    h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-top: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--accent);
+      border-left: 5px solid var(--accent-light);
+      padding-left: 1.2rem;
+      scroll-margin-top: 1rem;
+    }
+
+    h3 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin: 1.8rem 0 0.8rem 0;
+      color: var(--text-secondary);
+    }
+
+    p {
+      margin-bottom: 1.2rem;
+      color: var(--text-secondary);
+    }
+
+    strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    ul, ol {
+      margin: 1rem 0 1.5rem 1.8rem;
+      color: var(--text-secondary);
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    li::marker {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--accent-light);
+    }
+
+    a:hover {
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .note-box {
+      background-color: var(--code-bg);
+      border-radius: 1rem;
+      padding: 1.5rem 2rem;
+      margin: 2rem 0 1rem;
+      border-left: 6px solid var(--accent);
+      font-style: normal;
+      border: 1px solid var(--border-light);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .note-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    hr {
+      border: none;
+      border-top: 2px dashed var(--border-light);
+      margin: 2rem 0;
+    }
+
+    .footer-note {
+      margin-top: 2.5rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-align: center;
+      border-top: 1px solid var(--border-light);
+      padding-top: 1.5rem;
+    }
+
+    /* small screens */
+    @media (max-width: 600px) {
+      body {
+        padding: 1rem 0.5rem;
+      }
+      .container {
+        padding: 1.5rem 1rem;
+        border-radius: 1.5rem;
+      }
+      .doc-header {
+        flex-direction: column;
+        align-items: start;
+      }
+      h1 {
+        font-size: 1.9rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+        padding-left: 0.8rem;
+      }
+    }
+
+    /* print-friendly (retains light mode) */
+    @media print {
+      body, .container {
+        background: white;
+        color: black;
+        box-shadow: none;
+      }
+      .theme-toggle {
+        display: none;
+      }
+    }
+
+    /* smooth scroll */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* little badge for version */
+    .last-updated {
+      background: var(--code-bg);
+      border-radius: 30px;
+      padding: 0.3rem 1rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- header with toggle -->
+    <div class="doc-header">
+      <h1>The Write Choice Docs<br><span style="font-size: 1rem; font-weight: 400; display: block; color: var(--text-muted); letter-spacing: normal;">terms & conditions</span></h1>
+      <button class="theme-toggle" id="themeToggle" aria-label="Switch between dark and light mode">
+        <span>🌓</span> <span id="toggleLabel">Dark / Light</span>
+      </button>
+    </div>
+
+    <!-- last updated indicator (you can set dynamic date if needed) -->
+    <div class="last-updated">📅 Last updated: March 2026</div>
+
+    <!-- ========== CONTENT (based on revised Terms) ========== -->
+    
+    <!-- 1. Acceptance of Terms -->
+    <h2>1. Acceptance of Terms</h2>
+    <p>By accessing or using The Write Choice Docs website (the "Site") and its services, you agree to be legally bound by these Terms and Conditions ("Terms"). If you do not agree to all of these Terms, please do not use the Site.</p>
+    <p>These services are available only to individuals who are at least 18 years old. By placing an order, you confirm that you are of legal age and that you have read, understood, and agree to these Terms. Your order and payment constitute a binding agreement between you and The Write Choice Docs.</p>
+
+    <!-- 2. Changes to Terms -->
+    <h2>2. Changes to Terms</h2>
+    <p>We reserve the right to update or modify these Terms at any time without prior notice. It is your responsibility to review this page periodically for changes. Your continued use of the Site following the posting of any changes constitutes acceptance of those changes. For significant revisions, we will notify active users via email or text.</p>
+
+    <!-- 3. Our Services: Educational Support Only -->
+    <h2>3. Our Services: Educational Support Only</h2>
+    <p>The Write Choice Docs provides <strong>instructional support, tutoring, and educational coaching</strong>. We are designed to help you develop your own work and understand your course material. We do not write, complete, or submit assignments on behalf of clients.</p>
+    <p>Any templates, examples, outlines, or reference materials provided are for educational reference only and must be substantially modified, rewritten, and properly cited by you before submission. Using our materials as your own original work without significant modification may violate your institution’s academic integrity policies.</p>
+
+    <!-- 4. User Responsibilities & Acceptable Use -->
+    <h2>4. User Responsibilities & Acceptable Use</h2>
+    <p>You are solely responsible for how you use the information and materials provided by The Write Choice Docs.</p>
+    <ul>
+      <li><strong>Academic Integrity:</strong> You agree to use our services in compliance with your educational institution's policies and all applicable laws.</li>
+      <li><strong>Proper Citation:</strong> You agree to properly cite any ideas or excerpts from our materials if you incorporate them into your own work.</li>
+      <li><strong>Prohibited Conduct:</strong> You agree not to use any communication tools on our Site (such as forums or chat areas) to:
+        <ul style="margin-top: 0.5rem;">
+          <li>Harass, threaten, or defame others.</li>
+          <li>Post unlawful, obscene, or infringing content.</li>
+          <li>Upload files containing viruses or malicious software.</li>
+          <li>Collect information about other users without consent.</li>
+          <li>Violate any applicable laws or regulations.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <!-- 5. Confidentiality & Privacy -->
+    <h2>5. Confidentiality & Privacy</h2>
+    <p>We are committed to protecting your privacy. Client records are treated as confidential and will not be shared with third parties except:</p>
+    <ul>
+      <li>With authorized partners necessary to deliver services (e.g., secure payment processors).</li>
+      <li>When required to do so by law.</li>
+    </ul>
+    <p>We do not sell, rent, or trade your personal information. Any email communication is confidential and intended solely for the recipient. If you receive a message in error, please notify us immediately and delete it.</p>
+
+    <!-- 6. Payment, Refunds & Digital Products -->
+    <h2>6. Payment, Refunds & Digital Products</h2>
+    <ul>
+      <li><strong>Payment:</strong> Payment in full is required before services begin. We accept major credit/debit cards, CashApp, Venmo, and PayPal. Payment plans may be approved on a case-by-case basis.</li>
+      <li><strong>Refund Policy:</strong> Your satisfaction is important to us. If you believe our services did not meet the agreed-upon requirements, you must contact us within 7 days of delivery.
+        <ul>
+          <li><em>Please Note:</em> We do not guarantee specific grades. However, if you receive a grade below 80% on an assignment, we will review our materials for accuracy. Refunds or adjustments are granted solely at our discretion. Refunds will not be issued if materials were misused, submitted without modification, or used in violation of these Terms.</li>
+        </ul>
+      </li>
+      <li><strong>Digital Products:</strong> All digital products (templates, guides, etc.) are final sale and non-refundable once delivered or accessed. You agree not to share, resell, or distribute these materials without our express written consent.</li>
+    </ul>
+
+    <!-- 7. Intellectual Property & Original Work -->
+    <h2>7. Intellectual Property & Original Work</h2>
+    <ul>
+      <li><strong>Our IP:</strong> All content on this website and the original reference materials we create are the intellectual property of The Write Choice Docs.</li>
+      <li><strong>Non-Plagiarism Guarantee:</strong> We guarantee that all custom reference materials are original or properly sourced and are not created using AI. They are created by experts in the relevant field to serve as a learning guide for you. However, we strictly prohibit the submission of these materials as your own work.</li>
+    </ul>
+
+    <!-- 8. Disclaimer of Warranties -->
+    <h2>8. Disclaimer of Warranties</h2>
+    <p>OUR SERVICES AND SITE ARE PROVIDED "AS IS" AND "AS AVAILABLE." TO THE FULLEST EXTENT PERMITTED BY LAW, THE WRITE CHOICE DOCS DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. WE DO NOT WARRANT THAT THE SITE OR SERVICES WILL BE UNINTERRUPTED, SECURE, OR ERROR-FREE.</p>
+
+    <!-- 9. Limitation of Liability -->
+    <h2>9. Limitation of Liability</h2>
+    <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE WRITE CHOICE DOCS AND ITS AFFILIATES SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM YOUR USE OF, OR INABILITY TO USE, THE SITE OR SERVICES. THIS INCLUDES, BUT IS NOT LIMITED TO, DAMAGES FOR LOSS OF PROFITS, GOODWILL, OR DATA, OR FOR ANY MISUSE OF MATERIALS IN VIOLATION OF ACADEMIC POLICIES. YOUR SOLE REMEDY IS TO DISCONTINUE USING THE SERVICES.</p>
+
+    <!-- 10. General Provisions -->
+    <h2>10. General Provisions</h2>
+    <ul>
+      <li><strong>Entire Agreement:</strong> These Terms constitute the entire agreement between you and The Write Choice Docs regarding your use of the Site and Services, superseding any prior agreements.</li>
+      <li><strong>Severability:</strong> If any part of these Terms is found to be unenforceable, the remaining provisions will remain in full force and effect.</li>
+      <li><strong>Governing Law:</strong> These Terms are governed by the laws of the State of Georgia and the United States. Any disputes arising from these Terms shall be subject to the exclusive jurisdiction of the courts in Atlanta, Georgia.</li>
+      <li><strong>Links to Other Sites:</strong> We are not responsible for the content or practices of any third-party websites linked on our Site.</li>
+    </ul>
+
+    <!-- 11. Important Notice Regarding Georgia Law (SB 213) -->
+    <h2>11. Important Notice Regarding Georgia Law (SB 213)</h2>
+    <div class="note-box">
+      <p>By using our services, you acknowledge that misuse of our materials to engage in academic dishonesty is strictly prohibited and may violate state law, including Georgia Senate Bill 213. You are solely responsible for ensuring your own compliance with all institutional and legal requirements.</p>
+    </div>
+
+    <hr>
+
+    <!-- small footer / reminder -->
+    <div class="footer-note">
+      <p>If you have any questions about these Terms, please contact us through our website.</p>
+      <p style="margin-top: 0.5rem;">© The Write Choice Docs — educational guidance, always.</p>
+    </div>
+  </div>
+
+  <!-- simple theme toggle script -->
+  <script>
+    (function() {
+      const toggleBtn = document.getElementById('themeToggle');
+      const toggleLabel = document.getElementById('toggleLabel');
+      
+      // check for saved preference or system preference
+      const savedTheme = localStorage.getItem('theme');
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      
+      if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+        document.body.classList.add('dark');
+        toggleLabel.innerText = 'Light mode';
+      } else {
+        toggleLabel.innerText = 'Dark mode';
+      }
+
+      toggleBtn.addEventListener('click', () => {
+        if (document.body.classList.contains('dark')) {
+          document.body.classList.remove('dark');
+          localStorage.setItem('theme', 'light');
+          toggleLabel.innerText = 'Dark mode';
+        } else {
+          document.body.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
+          toggleLabel.innerText = 'Light mode';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

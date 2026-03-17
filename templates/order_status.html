@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+    <h1>Order Status: {{ order.order_id_string }}</h1>
+</section>
+
+<div class="order-details">
+    <p><strong>Type:</strong> {{ order_type|capitalize }}</p>
+    <p><strong>Date Submitted:</strong> {{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+    <p><strong>Status:</strong> {{ order.status }}</p>
+    
+    {% if order_type == 'essay' %}
+        <p><strong>Student Name:</strong> {{ order.student_name }}</p>
+        <p><strong>Class:</strong> {{ order.class_name }}</p>
+        <p><strong>Pages:</strong> {{ order.pages }}</p>
+        <p><strong>Deadline:</strong> {{ order.deadline }}</p>
+        <p><strong>Total:</strong> ${{ order.total }}</p>
+        <p><strong>Payment:</strong> 
+            {% if order.partial_paid %}50% Paid{% endif %}
+            {% if order.full_paid %} (Fully Paid){% elif order.partial_paid %} (Balance Due){% else %}Not Paid{% endif %}
+        </p>
+        {% if order.completed_file and order.full_paid %}
+            <p><strong>Completed File:</strong> <a href="{{ url_for('download', order_id=order.id) }}">Download</a></p>
+        {% endif %}
+
+        <!-- Payment Section for Essay -->
+        <div class="payment-section">
+            <h3>Payment</h3>
+            {% if not order.partial_paid %}
+                <p>Please pay 50% to start your order: <strong>${{ order.total * 0.5 }}</strong></p>
+                {% if session.user_id and order.user_id == session.user_id %}
+                    <a href="{{ url_for('payment') }}" class="btn btn-primary">Make 50% Payment</a>
+                {% else %}
+                    <p><em>Please log in to make payment.</em></p>
+                    <a href="{{ url_for('login') }}" class="btn btn-primary">Login to Pay</a>
+                {% endif %}
+            {% elif order.partial_paid and not order.full_paid %}
+                <p>Your order is in progress. Final payment required: <strong>${{ order.total * 0.5 }}</strong></p>
+                {% if session.user_id and order.user_id == session.user_id %}
+                    <a href="{{ url_for('payment') }}" class="btn btn-primary">Pay Balance</a>
+                {% else %}
+                    <p><em>Please log in to pay the balance.</em></p>
+                    <a href="{{ url_for('login') }}" class="btn btn-primary">Login to Pay</a>
+                {% endif %}
+            {% elif order.full_paid %}
+                <p>Payment completed.</p>
+            {% endif %}
+        </div>
+
+    {% elif order_type == 'general' %}
+        <p><strong>Description:</strong> {{ order.description }}</p>
+        <p><strong>Subject:</strong> {{ order.subject or 'N/A' }}</p>
+        <p><strong>Deadline:</strong> {{ order.deadline or 'N/A' }}</p>
+        
+        <!-- Quotation and Payment Section -->
+        <div class="payment-section">
+            <h3>Quotation & Payment</h3>
+            {% if order.status == 'quoted' and not order.user_accepted %}
+                <p>Admin has quoted: <strong>${{ order.quoted_price }}</strong></p>
+                {% if session.user_id and order.user_id == session.user_id %}
+                    <div class="form-actions-group">
+                        <a href="{{ url_for('accept_quote', order_type='general', order_id=order.id) }}" class="btn btn-success">Accept Quote</a>
+                        <a href="{{ url_for('decline_quote', order_type='general', order_id=order.id) }}" class="btn btn-danger">Decline Quote</a>
+                    </div>
+                {% else %}
+                    <p><em>Please log in to accept or decline this quote.</em></p>
+                    <a href="{{ url_for('login') }}" class="btn btn-primary">Login to Respond</a>
+                {% endif %}
+            {% elif order.user_accepted and not order.paid %}
+                <p>Quote accepted. Please pay full amount: <strong>${{ order.quoted_price }}</strong></p>
+                {% if session.user_id and order.user_id == session.user_id %}
+                    <a href="{{ url_for('payment_general', order_id=order.id) }}" class="btn btn-primary">Make Payment</a>
+                {% else %}
+                    <p><em>Please log in to make payment.</em></p>
+                    <a href="{{ url_for('login') }}" class="btn btn-primary">Login to Pay</a>
+                {% endif %}
+            {% elif order.paid %}
+                <p>Payment completed.</p>
+                {% if order.completed_file %}
+                    <p><strong>Completed File:</strong> <a href="{{ url_for('download_general', req_id=order.id) }}">Download</a></p>
+                {% endif %}
+            {% elif order.status == 'declined' %}
+                <p>Quote declined.</p>
+            {% endif %}
+        </div>
+
+    {% elif order_type == 'book' %}
+        <p><strong>Course:</strong> {{ order.subject }}</p>
+        <p><strong>Level:</strong> {{ order.level }}</p>
+        <p><strong>Assignments Count:</strong> {{ order.assignments_count }}</p>
+        <p><strong>Frequency:</strong> {{ order.frequency or 'N/A' }}</p>
+        <p><strong>Details:</strong> {{ order.details or 'N/A' }}</p>
+
+        <!-- Quotation and Payment Section -->
+        <div class="payment-section">
+            <h3>Quotation & Payment</h3>
+            {% if order.status == 'quoted' and not order.user_accepted %}
+                <p>Admin has quoted: <strong>${{ order.quoted_price }}</strong></p>
+                {% if session.user_id and order.user_id == session.user_id %}
+                    <div class="form-actions-group">
+                        <a href="{{ url_for('accept_quote', order_type='book', order_id=order.id) }}" class="btn btn-success">Accept Quote</a>
+                        <a href="{{ url_for('decline_quote', order_type='book', order_id=order.id) }}" class="btn btn-danger">Decline Quote</a>
+                    </div>
+                {% else %}
+                    <p><em>Please log in to accept or decline this quote.</em></p>
+                    <a href="{{ url_for('login') }}" class="btn btn-primary">Login to Respond</a>
+                {% endif %}
+            {% elif order.user_accepted and not order.paid %}
+                <p>Quote accepted. Please pay full amount: <strong>${{ order.quoted_price }}</strong></p>
+                {% if session.user_id and order.user_id == session.user_id %}
+                    <a href="{{ url_for('payment_book', inquiry_id=order.id) }}" class="btn btn-primary">Make Payment</a>
+                {% else %}
+                    <p><em>Please log in to make payment.</em></p>
+                    <a href="{{ url_for('login') }}" class="btn btn-primary">Login to Pay</a>
+                {% endif %}
+            {% elif order.paid %}
+                <p>Payment completed.</p>
+            {% elif order.status == 'declined' %}
+                <p>Quote declined.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

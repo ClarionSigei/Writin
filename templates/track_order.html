@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+    <h1><i class="fas fa-search"></i> Track Your Order</h1>
+    <p>Enter your Order ID and email to check status.</p>
+</section>
+<div class="form-container" style="max-width: 500px;">
+    <form method="post" class="styled-form">
+        <div class="form-row">
+            <label for="order_id">Order ID</label>
+            <input type="text" name="order_id" id="order_id" placeholder="e.g., ESS-1000001" required>
+        </div>
+        <div class="form-row">
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" required>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Track Order</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

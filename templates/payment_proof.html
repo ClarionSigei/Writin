@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+    <h1>Submit Payment Proof</h1>
+    <p>Order: {{ order_id_string }}</p>
+    <p>Amount: ${{ amount }}</p>
+</section>
+<div class="form-container" style="max-width: 500px;">
+    <form method="post" enctype="multipart/form-data" class="styled-form">
+        <div class="form-row">
+            <label for="transaction_id">Transaction ID / Code</label>
+            <input type="text" name="transaction_id" id="transaction_id" required placeholder="e.g., PAY-123456789">
+        </div>
+        <div class="form-row">
+            <label for="proof_image">Upload Payment Screenshot</label>
+            <div class="file-input-wrapper">
+                <input type="file" name="proof_image" id="proof_image" accept="image/*,.pdf" required>
+                <span class="file-custom">Choose file...</span>
+            </div>
+        </div>
+        <div class="form-row">
+            <label for="method">Payment Method</label>
+            <select name="method" id="method" required>
+                <option value="paypal">PayPal</option>
+                <option value="cashapp">CashApp</option>
+                <option value="binance">Binance Pay</option>
+            </select>
+        </div>
+        <input type="hidden" name="order_type" value="{{ order_type }}">
+        <input type="hidden" name="order_id" value="{{ order_id }}">
+        <input type="hidden" name="payment_type" value="{{ payment_type }}">
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Submit Proof</button>
+        </div>
+    </form>
+</div>
+<script>
+    document.getElementById('proof_image').addEventListener('change', function(e) {
+        const fileName = e.target.files[0] ? e.target.files[0].name : 'Choose file...';
+        document.querySelector('.file-custom').textContent = fileName;
+    });
+</script>
+{% endblock %}

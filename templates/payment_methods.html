@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+    <h1><i class="fas fa-credit-card"></i> Payment Methods</h1>
+    <p>We accept the following secure payment options. For essays, 50% upfront is required. For other services, full payment is requested after quote acceptance.</p>
+</section>
+
+<div class="payment-cards">
+    <div class="payment-card">
+        <i class="fab fa-paypal"></i>
+        <h3>PayPal</h3>
+        <p>Send payment to:</p>
+        <code>youremail@example.com</code>
+        <a href="https://paypal.me/yourlink" target="_blank" class="btn btn-secondary">Pay via PayPal</a>
+    </div>
+    <div class="payment-card">
+        <i class="fab fa-cashapp"></i>
+        <h3>CashApp</h3>
+        <p>Send to $Cashtag:</p>
+        <code>$YourCashtag</code>
+        <a href="https://cash.app/$YourCashtag" target="_blank" class="btn btn-secondary">Pay via CashApp</a>
+    </div>
+    <div class="payment-card">
+        <i class="fab fa-binance"></i>
+        <h3>Binance Pay</h3>
+        <p>Binance ID:</p>
+        <code>123456789</code>
+        <p class="small">(Scan QR code from app)</p>
+        <a href="#" class="btn btn-secondary">Pay via Binance</a>
+    </div>
+</div>
+
+<div class="payment-note">
+    <p><i class="fas fa-info-circle"></i> After sending payment, please notify us via WhatsApp or email with your order ID to confirm. For essays, your order will begin once we confirm the 50% deposit.</p>
+</div>
+{% endblock %}

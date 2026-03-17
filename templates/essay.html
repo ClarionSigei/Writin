@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+    <h1><i class="fas fa-file-alt"></i> Order an Essay</h1>
+    <p>Fill in the details below to get an instant price. You may also upload instructions or reference materials.</p>
+</section>
+
+<div class="form-container">
+    <form id="essayForm" method="post" enctype="multipart/form-data" class="styled-form">
+        <div class="form-row">
+            <label for="timezone">Time Zone</label>
+            <select name="timezone" id="timezone" required>
+                <option value="GMT-12">(GMT-12:00) International Date Line West</option>
+                <option value="GMT-11">(GMT-11:00) Midway Island, Samoa</option>
+                <option value="GMT-10">(GMT-10:00) Hawaii</option>
+                <option value="GMT-9">(GMT-09:00) Alaska</option>
+                <option value="GMT-8">(GMT-08:00) Pacific Time (US & Canada)</option>
+                <option value="GMT-7">(GMT-07:00) Mountain Time (US & Canada)</option>
+                <option value="GMT-6">(GMT-06:00) Central Time (US & Canada)</option>
+                <option value="GMT-5" selected>(GMT-05:00) Eastern Time (US & Canada)</option>
+                <option value="GMT-4">(GMT-04:00) Atlantic Time (Canada)</option>
+                <option value="GMT-3">(GMT-03:00) Buenos Aires</option>
+                <option value="GMT+0">(GMT+00:00) London</option>
+                <option value="GMT+1">(GMT+01:00) Berlin, Paris</option>
+                <option value="GMT+2">(GMT+02:00) Athens, Cairo</option>
+                <option value="GMT+3">(GMT+03:00) Moscow</option>
+                <option value="GMT+5:30">(GMT+05:30) India</option>
+                <option value="GMT+8">(GMT+08:00) Beijing, Singapore</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <label for="pages">Number of Pages</label>
+            <input type="number" name="pages" id="pages" min="1" value="1" required>
+        </div>
+
+        <div class="form-row">
+            <label for="deadline">Deadline</label>
+            <select name="deadline" id="deadline" required>
+                <option value="0-2">0–2 days ($12/page)</option>
+                <option value="3-4">3–4 days ($10/page)</option>
+                <option value="5+">5+ days ($8/page)</option>
+            </select>
+        </div>
+
+        <!-- Live Price Display -->
+        <div class="price-box">
+            <span>Total Price:</span>
+            <span class="price-amount" id="totalPrice">$12.00</span>
+        </div>
+
+        <div class="form-row">
+            <label>Delivery Format</label>
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" name="format" value="link" required> <i class="fas fa-link"></i> Link
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="format" value="pdf"> <i class="fas fa-file-pdf"></i> PDF
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="format" value="text"> <i class="fas fa-file-alt"></i> Plain Text
+                </label>
+            </div>
+        </div>
+
+        <!-- Instructions Section with Conditional Display -->
+        <div class="form-row">
+            <label>How would you like to provide instructions? (optional)</label>
+            <div class="radio-group instruction-type">
+                <label class="radio-label">
+                    <input type="radio" name="instruction_type" value="file" id="inst-file-radio"> <i class="fas fa-upload"></i> Upload File
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="instruction_type" value="link" id="inst-link-radio"> <i class="fas fa-link"></i> Provide Link
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="instruction_type" value="text" id="inst-text-radio"> <i class="fas fa-pencil-alt"></i> Paste Text
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="instruction_type" value="none" id="inst-none-radio" checked> <i class="fas fa-ban"></i> None
+                </label>
+            </div>
+        </div>
+
+        <!-- Conditional Fields -->
+        <div class="instruction-field" id="file-field" style="display: none;">
+            <div class="form-row">
+                <label for="instructions_file">Upload File (PDF, DOC, DOCX, TXT, JPG, PNG)</label>
+                <div class="file-input-wrapper">
+                    <input type="file" name="instructions_file" id="instructions_file" accept=".pdf,.doc,.docx,.txt,.jpg,.png">
+                    <span class="file-custom">Choose file...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="instruction-field" id="link-field" style="display: none;">
+            <div class="form-row">
+                <label for="instructions_link">Provide a Link</label>
+                <input type="url" name="instructions_link" id="instructions_link" placeholder="https://...">
+            </div>
+        </div>
+
+        <div class="instruction-field" id="text-field" style="display: none;">
+            <div class="form-row">
+                <label for="instructions_text">Paste Instructions</label>
+                <textarea name="instructions_text" id="instructions_text" rows="4" placeholder="Paste any instructions or reference text here..."></textarea>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <label for="subject">Subject (optional)</label>
+            <input type="text" name="subject" id="subject" placeholder="e.g., History, Literature">
+        </div>
+
+        <div class="form-row">
+            <label for="student_name">Student Name <span class="required">*</span></label>
+            <input type="text" name="student_name" id="student_name" required>
+        </div>
+
+        <div class="form-row">
+            <label for="class_name">Class Name <span class="required">*</span></label>
+            <input type="text" name="class_name" id="class_name" placeholder="e.g., ENG 101" required>
+        </div>
+
+        <!-- Guest email field (shown only if user not logged in) -->
+        {% if not user %}
+        <div class="form-row">
+            <label for="guest_email">Your Email (for tracking) <span class="required">*</span></label>
+            <input type="email" name="guest_email" id="guest_email" required placeholder="you@example.com">
+        </div>
+        {% endif %}
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-arrow-right"></i> Proceed to Payment</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function calculateTotal() {
+        const pages = parseInt(document.getElementById('pages').value) || 1;
+        const deadline = document.getElementById('deadline').value;
+        const rates = {'0-2': 12, '3-4': 10, '5+': 8};
+        const rate = rates[deadline] || 8;
+        const total = pages * rate;
+        document.getElementById('totalPrice').innerText = '$' + total.toFixed(2);
+    }
+    document.getElementById('pages').addEventListener('input', calculateTotal);
+    document.getElementById('deadline').addEventListener('change', calculateTotal);
+
+    // Conditional instruction fields
+    const instructionRadios = document.querySelectorAll('input[name="instruction_type"]');
+    const fileField = document.getElementById('file-field');
+    const linkField = document.getElementById('link-field');
+    const textField = document.getElementById('text-field');
+    
+    // File input display
+    document.getElementById('instructions_file').addEventListener('change', function(e) {
+        const fileName = e.target.files[0] ? e.target.files[0].name : 'Choose file...';
+        document.querySelector('.file-custom').textContent = fileName;
+    });
+
+    instructionRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Hide all fields
+            fileField.style.display = 'none';
+            linkField.style.display = 'none';
+            textField.style.display = 'none';
+            
+            // Show selected field
+            if (this.value === 'file') {
+                fileField.style.display = 'block';
+            } else if (this.value === 'link') {
+                linkField.style.display = 'block';
+            } else if (this.value === 'text') {
+                textField.style.display = 'block';
+            }
+        });
+    });
+</script>
+{% endblock %}
