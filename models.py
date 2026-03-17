@@ -1,3 +1,4 @@
+import os
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -85,16 +86,16 @@ class BookClassInquiry(db.Model):
 
 class Payment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    order_type = db.Column(db.String(20))  # essay, general, book
-    order_id = db.Column(db.Integer)        # id in respective table
+    order_type = db.Column(db.String(20))          # essay, general, book
+    order_id = db.Column(db.Integer)                # id in respective table
     amount = db.Column(db.Float)
-    method = db.Column(db.String(20))       # paypal, cashapp, binance
-    type = db.Column(db.String(20))         # partial, full
-    transaction_id = db.Column(db.String(100))  # user-provided transaction ID/code
-    proof_image = db.Column(db.String(200))      # path to uploaded screenshot
+    method = db.Column(db.String(20))               # paypal, cashapp, binance
+    type = db.Column(db.String(20))                 # partial, full
+    transaction_id = db.Column(db.String(100))      # user-provided transaction ID/code
+    proof_image = db.Column(db.String(200))         # path to uploaded screenshot
     status = db.Column(db.String(20), default='pending')  # pending, verified, rejected
     verified = db.Column(db.Boolean, default=False)
-    verified_by = db.Column(db.Integer)      # admin user id (optional)
+    verified_by = db.Column(db.Integer)              # admin user id (optional)
     verified_at = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -104,9 +105,9 @@ class ArchivedOrder(db.Model):
     order_type = db.Column(db.String(20))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     guest_email = db.Column(db.String(100))
-    data = db.Column(db.Text)
+    data = db.Column(db.Text)                        # JSON of all order data
     archived_at = db.Column(db.DateTime, default=datetime.utcnow)
-    archived_by = db.Column(db.Integer)
+    archived_by = db.Column(db.Integer)               # admin user id (optional)
     deletion_scheduled = db.Column(db.DateTime)
 
 class OrderCounter(db.Model):
