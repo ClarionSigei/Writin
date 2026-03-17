@@ -1,16 +1,22 @@
 import os
 import json
-from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file, abort
 from models import db, User, EssayOrder, GeneralRequest, BookClassInquiry, Payment, ArchivedOrder, OrderCounter, Notification, PasswordResetToken
 from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
 import secrets
 from functools import wraps
 
+# Create Flask app
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-change-in-production'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['UPLOAD_FOLDER'] = 'uploads'
+
+# Configuration from environment variables
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///database.db')
+app.config['UPLOAD_FOLDER'] = os.environ.get('UPLOAD_FOLDER', 'uploads')
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
+
+# Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 db.init_app(app)
@@ -22,6 +28,7 @@ def calculate_price(pages, deadline):
     return pages * rate
 
 def generate_order_id(order_type):
+    """Generate a unique order ID: TYPE-global_counter (e.g., ESS-0000001)"""
     counter = OrderCounter.query.filter_by(order_type=order_type).first()
     if not counter:
         counter = OrderCounter(order_type=order_type, last_number=0)
@@ -65,8 +72,10 @@ def create_notification(user_id, type, title, message, link=None):
     db.session.add(notif)
     db.session.commit()
 
-def send_simulated_email(to, subject, body):
-    print(f"\n--- SIMULATED EMAIL ---\nTo: {to}\nSubject: {subject}\nBody:\n{body}\n--- END ---\n")
+def send_email(to, subject, body):
+    """Simulated email – replace with actual email sending (e.g., Flask-Mail) in production."""
+    print(f"\n--- EMAIL ---\nTo: {to}\nSubject: {subject}\nBody:\n{body}\n--- END ---\n")
+    # In production, use Flask-Mail or a third-party service like SendGrid.
 
 # ---------- Main Routes ----------
 @app.route('/')
@@ -127,21 +136,13 @@ def essay():
         db.session.commit()
 
         recipient = user.email if user else guest_email
-        send_simulated_email(recipient, f"Essay Order Confirmation - {order_id_string}",
-                             f"Thank you for your order.\n\nOrder ID: {order_id_string}\nTotal: ${total}\n\nYou can track your order at: {url_for('track_order', _external=True)}")
+        send_email(recipient, f"Essay Order Confirmation - {order_id_string}",
+                   f"Thank you for your order.\n\nOrder ID: {order_id_string}\nTotal: ${total}\n\nYou can track your order at: {url_for('track_order', _external=True)}")
 
         session['pending_order'] = {'id': order.id, 'type': 'essay', 'amount_partial': total * 0.5}
         return redirect(url_for('payment'))
 
     return render_template('essay.html', user=user)
-
-@app.route('/privacy')
-def privacy():
-    return render_template('privacy.html')
-
-@app.route('/terms')
-def terms():
-    return render_template('terms.html')
 
 @app.route('/general', methods=['GET', 'POST'])
 def general():
@@ -186,8 +187,8 @@ def general():
         db.session.commit()
 
         recipient = user.email if user else guest_email
-        send_simulated_email(recipient, f"General Assignment Request - {order_id_string}",
-                             f"We received your request.\n\nRequest ID: {order_id_string}\n\nWe will contact you with a quote shortly.\n\nTrack your request: {url_for('track_order', _external=True)}")
+        send_email(recipient, f"General Assignment Request - {order_id_string}",
+                   f"We received your request.\n\nRequest ID: {order_id_string}\n\nWe will contact you with a quote shortly.\n\nTrack your request: {url_for('track_order', _external=True)}")
 
         flash('Your request has been submitted. We will contact you with a quote shortly.', 'success')
         return redirect(url_for('index'))
@@ -222,8 +223,8 @@ def book_class():
         db.session.commit()
 
         recipient = user.email if user else guest_email
-        send_simulated_email(recipient, f"Book Class Inquiry - {order_id_string}",
-                             f"Thank you for your inquiry.\n\nInquiry ID: {order_id_string}\n\nWe will contact you to discuss a tailored plan.\n\nTrack your inquiry: {url_for('track_order', _external=True)}")
+        send_email(recipient, f"Book Class Inquiry - {order_id_string}",
+                   f"Thank you for your inquiry.\n\nInquiry ID: {order_id_string}\n\nWe will contact you to discuss a tailored plan.\n\nTrack your inquiry: {url_for('track_order', _external=True)}")
 
         flash('Your inquiry has been sent. We will contact you to discuss a tailored plan.', 'success')
         return redirect(url_for('index'))
@@ -240,33 +241,6 @@ def payment():
         return redirect(url_for('index'))
     return render_template('payment.html', amount=pending['amount_partial'])
 
-@app.route('/payment/confirm/<int:order_id>')
-def confirm_payment(order_id):
-    order = EssayOrder.query.get(order_id)
-    if order:
-        order.partial_paid = True
-        order.status = 'in_progress'
-        db.session.commit()
-        session.pop('pending_order', None)
-        
-        if order.user_id:
-            create_notification(order.user_id, 'payment_received', 'Payment Received',
-                                f'Your 50% payment for order {order.order_id_string} has been confirmed.')
-        
-        recipient = None
-        if order.user_id:
-            user = User.query.get(order.user_id)
-            recipient = user.email if user else None
-        else:
-            recipient = order.guest_email
-        
-        if recipient:
-            send_simulated_email(recipient, f"Payment Confirmed - {order.order_id_string}",
-                                 f"Your 50% payment for order {order.order_id_string} has been received. We will start working on your essay.")
-        
-        flash('Payment recorded. We will start working on your order.', 'success')
-    return redirect(url_for('index'))
-
 @app.route('/payment/general/<int:order_id>')
 def payment_general(order_id):
     order = GeneralRequest.query.get_or_404(order_id)
@@ -276,28 +250,6 @@ def payment_general(order_id):
     session['pending_general_payment'] = {'id': order.id, 'amount': order.quoted_price}
     return render_template('payment_general.html', amount=order.quoted_price, order_id=order.id)
 
-@app.route('/payment/general/confirm/<int:order_id>')
-def confirm_general_payment(order_id):
-    order = GeneralRequest.query.get_or_404(order_id)
-    if order.user_accepted and not order.paid:
-        order.paid = True
-        order.status = 'paid'
-        db.session.commit()
-        if order.user_id:
-            create_notification(order.user_id, 'payment_received', 'Payment Received',
-                                f'Full payment for request {order.order_id_string} has been confirmed.')
-        recipient = None
-        if order.user_id:
-            user = User.query.get(order.user_id)
-            recipient = user.email if user else None
-        else:
-            recipient = order.guest_email
-        if recipient:
-            send_simulated_email(recipient, f"Payment Confirmed - {order.order_id_string}",
-                                 f"Your full payment for request {order.order_id_string} has been received. We will start working on your assignment.")
-        flash('Payment recorded. We will start working on your request.', 'success')
-    return redirect(url_for('track_order'))
-
 @app.route('/payment/book/<int:inquiry_id>')
 def payment_book(inquiry_id):
     inquiry = BookClassInquiry.query.get_or_404(inquiry_id)
@@ -306,28 +258,6 @@ def payment_book(inquiry_id):
         return redirect(url_for('track_order'))
     session['pending_book_payment'] = {'id': inquiry.id, 'amount': inquiry.quoted_price}
     return render_template('payment_book.html', amount=inquiry.quoted_price, inquiry_id=inquiry.id)
-
-@app.route('/payment/book/confirm/<int:inquiry_id>')
-def confirm_book_payment(inquiry_id):
-    inquiry = BookClassInquiry.query.get_or_404(inquiry_id)
-    if inquiry.user_accepted and not inquiry.paid:
-        inquiry.paid = True
-        inquiry.status = 'paid'
-        db.session.commit()
-        if inquiry.user_id:
-            create_notification(inquiry.user_id, 'payment_received', 'Payment Received',
-                                f'Full payment for inquiry {inquiry.order_id_string} has been confirmed.')
-        recipient = None
-        if inquiry.user_id:
-            user = User.query.get(inquiry.user_id)
-            recipient = user.email if user else None
-        else:
-            recipient = inquiry.guest_email
-        if recipient:
-            send_simulated_email(recipient, f"Payment Confirmed - {inquiry.order_id_string}",
-                                 f"Your full payment for inquiry {inquiry.order_id_string} has been received. We will start working on your class plan.")
-        flash('Payment recorded. We will start working on your class plan.', 'success')
-    return redirect(url_for('track_order'))
 
 @app.route('/payment/proof', methods=['GET', 'POST'])
 def payment_proof():
@@ -343,21 +273,16 @@ def payment_proof():
             flash('Please upload a screenshot.', 'danger')
             return redirect(request.url)
         
-        # Save proof image
         filename = secure_filename(f"proof_{order_type}_{order_id}_{datetime.utcnow().timestamp()}.{proof_image.filename.split('.')[-1]}")
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         proof_image.save(filepath)
         
-        # Determine amount based on order type
         amount = 0
         order = None
         if order_type == 'essay':
             order = EssayOrder.query.get(order_id)
             if order:
-                if payment_type == 'partial':
-                    amount = order.total * 0.5
-                elif payment_type == 'full':
-                    amount = order.total * 0.5  # balance
+                amount = order.total * 0.5 if payment_type == 'partial' else order.total * 0.5
         elif order_type == 'general':
             order = GeneralRequest.query.get(order_id)
             if order:
@@ -371,7 +296,6 @@ def payment_proof():
             flash('Order not found.', 'danger')
             return redirect(url_for('index'))
         
-        # Create payment record
         payment = Payment(
             order_type=order_type,
             order_id=order_id,
@@ -385,9 +309,9 @@ def payment_proof():
         )
         db.session.add(payment)
         
-        # Update order status to indicate payment pending (optional)
+        # Update order status to payment_pending (optional)
         if order_type == 'essay':
-            order.status = 'payment_pending'  # new status we might need to add
+            order.status = 'payment_pending'
         elif order_type == 'general':
             order.status = 'payment_pending'
         elif order_type == 'book':
@@ -395,14 +319,12 @@ def payment_proof():
         
         db.session.commit()
         
-        # Notify admin via simulated email
-        send_simulated_email('admin@example.com', f"New Payment Proof Submitted - {order.order_id_string}",
-                             f"A new payment proof has been submitted for order {order.order_id_string}. Please verify in admin panel.")
+        send_email('admin@example.com', f"New Payment Proof Submitted - {order.order_id_string}",
+                   f"A new payment proof has been submitted for order {order.order_id_string}. Please verify in admin panel.")
         
         flash('Payment proof submitted successfully. Admin will verify shortly.', 'success')
         return redirect(url_for('track_order'))
     
-    # GET request - show form
     order_type = request.args.get('order_type')
     order_id = request.args.get('order_id')
     payment_type = request.args.get('payment_type')
@@ -425,10 +347,10 @@ def payment_proof():
             order_id_string = order.order_id_string
             amount = order.quoted_price
     
-    return render_template('payment_proof.html', 
-                           order_type=order_type, 
-                           order_id=order_id, 
-                           payment_type=payment_type, 
+    return render_template('payment_proof.html',
+                           order_type=order_type,
+                           order_id=order_id,
+                           payment_type=payment_type,
                            amount=amount,
                            order_id_string=order_id_string)
 
@@ -455,8 +377,8 @@ def register():
         db.session.add(user)
         db.session.commit()
         
-        send_simulated_email(email, "Welcome to Online Writing Website",
-                             f"Hi {full_name},\n\nYour account has been created successfully.\n\nYou can now log in and track your orders.\n\nBest regards,\nThe Team")
+        send_email(email, "Welcome to Online Writing Website",
+                   f"Hi {full_name},\n\nYour account has been created successfully.\n\nYou can now log in and track your orders.\n\nBest regards,\nThe Team")
         
         flash('Registration successful. Please log in.', 'success')
         return redirect(url_for('login'))
@@ -498,8 +420,8 @@ def forgot_password():
             db.session.commit()
             
             reset_link = url_for('reset_password', token=token, _external=True)
-            send_simulated_email(email, "Password Reset Request",
-                                 f"Hi {user.full_name},\n\nClick the link to reset your password: {reset_link}\n\nThis link expires in 1 hour.\n\nIf you didn't request this, ignore this email.")
+            send_email(email, "Password Reset Request",
+                       f"Hi {user.full_name},\n\nClick the link to reset your password: {reset_link}\n\nThis link expires in 1 hour.\n\nIf you didn't request this, ignore this email.")
         flash('If your email is registered, you will receive a password reset link.', 'info')
         return redirect(url_for('login'))
     return render_template('forgot_password.html')
@@ -647,7 +569,7 @@ def track_order():
 def admin_login():
     if request.method == 'POST':
         password = request.form['password']
-        if password == 'admin123':
+        if password == os.environ.get('ADMIN_PASSWORD', 'admin123'):
             session['admin'] = True
             return redirect(url_for('admin_dashboard'))
         else:
@@ -728,6 +650,65 @@ def admin_inquiry(inquiry_id):
         flash('Inquiry updated', 'success')
         return redirect(url_for('admin_inquiry', inquiry_id=inquiry_id))
     return render_template('admin/inquiry_detail.html', inquiry=inquiry, User=User)
+
+@app.route('/admin/payments')
+@admin_required
+def admin_payments():
+    pending = Payment.query.filter_by(status='pending').order_by(Payment.created_at.desc()).all()
+    verified = Payment.query.filter_by(status='verified').order_by(Payment.created_at.desc()).all()
+    return render_template('admin/payment_verification.html',
+                           pending_payments=pending,
+                           verified_payments=verified,
+                           EssayOrder=EssayOrder,
+                           GeneralRequest=GeneralRequest,
+                           BookClassInquiry=BookClassInquiry)
+
+@app.route('/admin/payment/view/<int:payment_id>')
+@admin_required
+def admin_view_proof(payment_id):
+    payment = Payment.query.get_or_404(payment_id)
+    if payment.proof_image and os.path.exists(payment.proof_image):
+        return send_file(payment.proof_image, as_attachment=False)
+    else:
+        flash('File not found', 'danger')
+        return redirect(url_for('admin_payments'))
+
+@app.route('/admin/payment/verify/<int:payment_id>/<action>')
+@admin_required
+def admin_verify_payment(payment_id, action):
+    payment = Payment.query.get_or_404(payment_id)
+    if action == 'verify':
+        payment.status = 'verified'
+        payment.verified = True
+        payment.verified_at = datetime.utcnow()
+        if payment.order_type == 'essay':
+            order = EssayOrder.query.get(payment.order_id)
+            if order:
+                if payment.type == 'partial':
+                    order.partial_paid = True
+                    order.status = 'in_progress'
+                elif payment.type == 'full':
+                    order.full_paid = True
+                    order.status = 'completed'
+                db.session.add(order)
+        elif payment.order_type == 'general':
+            order = GeneralRequest.query.get(payment.order_id)
+            if order:
+                order.paid = True
+                order.status = 'paid'
+                db.session.add(order)
+        elif payment.order_type == 'book':
+            order = BookClassInquiry.query.get(payment.order_id)
+            if order:
+                order.paid = True
+                order.status = 'paid'
+                db.session.add(order)
+        flash('Payment verified and order updated.', 'success')
+    elif action == 'reject':
+        payment.status = 'rejected'
+        flash('Payment rejected.', 'info')
+    db.session.commit()
+    return redirect(url_for('admin_payments'))
 
 @app.route('/admin/delete/<order_type>/<int:order_id>', methods=['POST'])
 @admin_required
@@ -821,7 +802,7 @@ def admin_cleanup():
     flash(f'Cleanup completed. {len(unpaid_essays)} unpaid essays archived, {len(completed_essays)} completed essays archived, {len(old_archives)} old archives deleted.', 'success')
     return redirect(url_for('admin_dashboard'))
 
-# Download routes (admin only)
+# ---------- Download Routes ----------
 @app.route('/admin/instructions/<int:order_id>')
 @admin_required
 def download_instructions(order_id):
@@ -852,67 +833,6 @@ def download_general_completed(req_id):
         flash('File not found', 'danger')
         return redirect(url_for('admin_general', req_id=req_id))
 
-@app.route('/admin/payments')
-@admin_required
-def admin_payments():
-    pending = Payment.query.filter_by(status='pending').order_by(Payment.created_at.desc()).all()
-    verified = Payment.query.filter_by(status='verified').order_by(Payment.created_at.desc()).all()
-    return render_template('admin/payment_verification.html', 
-                           pending_payments=pending, 
-                           verified_payments=verified,
-                           EssayOrder=EssayOrder,
-                           GeneralRequest=GeneralRequest,
-                           BookClassInquiry=BookClassInquiry)
-
-@app.route('/admin/payment/view/<int:payment_id>')
-@admin_required
-def admin_view_proof(payment_id):
-    payment = Payment.query.get_or_404(payment_id)
-    if payment.proof_image and os.path.exists(payment.proof_image):
-        return send_file(payment.proof_image, as_attachment=False)
-    else:
-        flash('File not found', 'danger')
-        return redirect(url_for('admin_payments'))
-
-@app.route('/admin/payment/verify/<int:payment_id>/<action>')
-@admin_required
-def admin_verify_payment(payment_id, action):
-    payment = Payment.query.get_or_404(payment_id)
-    if action == 'verify':
-        payment.status = 'verified'
-        payment.verified = True
-        payment.verified_at = datetime.utcnow()
-        # Update the corresponding order based on payment type
-        if payment.order_type == 'essay':
-            order = EssayOrder.query.get(payment.order_id)
-            if order:
-                if payment.type == 'partial':
-                    order.partial_paid = True
-                    order.status = 'in_progress'
-                elif payment.type == 'full':
-                    order.full_paid = True
-                    order.status = 'completed'
-                db.session.add(order)
-        elif payment.order_type == 'general':
-            order = GeneralRequest.query.get(payment.order_id)
-            if order:
-                order.paid = True
-                order.status = 'paid'
-                db.session.add(order)
-        elif payment.order_type == 'book':
-            order = BookClassInquiry.query.get(payment.order_id)
-            if order:
-                order.paid = True
-                order.status = 'paid'
-                db.session.add(order)
-        flash('Payment verified and order updated.', 'success')
-    elif action == 'reject':
-        payment.status = 'rejected'
-        flash('Payment rejected.', 'info')
-    db.session.commit()
-    return redirect(url_for('admin_payments'))
-
-# Download for client after full payment
 @app.route('/download/<int:order_id>')
 def download(order_id):
     order = EssayOrder.query.get_or_404(order_id)
@@ -931,8 +851,26 @@ def download_general(req_id):
         flash('Payment required or file not ready', 'danger')
         return redirect(url_for('track_order'))
 
+# ---------- Legal Pages ----------
+@app.route('/privacy')
+def privacy():
+    return render_template('privacy.html')
+
+@app.route('/terms')
+def terms():
+    return render_template('terms.html')
+
+# ---------- Error Handlers (optional) ----------
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('500.html'), 500
+
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 5000))
-    debug = os.getenv('FLASK_ENV', 'development') == 'development'
-    
-    app.run(debug=debug, port=port)
+    with app.app_context():
+        db.create_all()
+    # In production, debug=False, host='0.0.0.0', port=5000
+    app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
