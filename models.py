@@ -57,7 +57,7 @@ class GeneralRequest(db.Model):
     link = db.Column(db.String(200))
     text = db.Column(db.Text)
     subject = db.Column(db.String(100))
-    deadline = db.Column(db.String(50))
+    deadline = db.Column(db.String(50), nullable=False)  # now required
     status = db.Column(db.String(20), default='quote_requested')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
@@ -74,7 +74,7 @@ class BookClassInquiry(db.Model):
     
     subject = db.Column(db.String(100))
     level = db.Column(db.String(50))
-    assignments_count = db.Column(db.Integer)
+    assignments_count = db.Column(db.Integer)  # label changed to "Submit Login" but field remains
     frequency = db.Column(db.String(100))
     details = db.Column(db.Text)
     status = db.Column(db.String(20), default='inquiry')
@@ -131,3 +131,13 @@ class PasswordResetToken(db.Model):
     token = db.Column(db.String(100), unique=True)
     expires_at = db.Column(db.DateTime)
     used = db.Column(db.Boolean, default=False)
+
+# New Message model for admin-user communication
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    order_type = db.Column(db.String(20))          # general, book
+    order_id = db.Column(db.Integer)                # id in respective table
+    sender_type = db.Column(db.String(20))          # admin, user
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_read = db.Column(db.Boolean, default=False)
