@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - The Write Choice Docs</title>
+    <style>
+        /* CSS variables for light and dark themes */
+        :root {
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #334155;
+            --border-light: #e2e8f0;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --header-border: #cbd5e1;
+            --code-bg: #f1f5f9;
+            --shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.02);
+        }
+
+        /* Dark theme overrides */
+        body.dark {
+            --bg-page: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --border-light: #334155;
+            --accent: #3b82f6;
+            --accent-hover: #60a5fa;
+            --header-border: #475569;
+            --code-bg: #2d3a4f;
+            --shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+        }
+
+        /* System preference – can be overridden by toggle */
+        @media (prefers-color-scheme: dark) {
+            body:not(.light):not(.dark) {
+                --bg-page: #0f172a;
+                --bg-card: #1e293b;
+                --text-primary: #f1f5f9;
+                --text-secondary: #cbd5e1;
+                --border-light: #334155;
+                --accent: #3b82f6;
+                --accent-hover: #60a5fa;
+                --header-border: #475569;
+                --code-bg: #2d3a4f;
+                --shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .policy-container {
+            max-width: 900px;
+            width: 100%;
+            background-color: var(--bg-card);
+            border-radius: 1.5rem;
+            box-shadow: var(--shadow);
+            padding: 2.5rem 2rem;
+            border: 1px solid var(--border-light);
+        }
+
+        /* Header styles with good visibility */
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .effective-date {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            border-left: 5px solid var(--accent);
+            padding-left: 1rem;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        ul {
+            margin-bottom: 1.5rem;
+            padding-left: 1.8rem;
+            color: var(--text-secondary);
+        }
+
+        li {
+            margin-bottom: 0.4rem;
+        }
+
+        strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-light);
+            margin: 2rem 0;
+        }
+
+        /* Theme toggle button */
+        .theme-toggle {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 1.5rem;
+        }
+
+        .theme-toggle button {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 2rem;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .theme-toggle button:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .theme-toggle button .icon {
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        /* Footer/contact */
+        .contact-block {
+            background-color: var(--code-bg);
+            padding: 1.25rem 1.5rem;
+            border-radius: 1rem;
+            margin-top: 2rem;
+            border-left: 4px solid var(--accent);
+        }
+
+        .contact-block p {
+            margin-bottom: 0.25rem;
+        }
+
+        .contact-block a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .contact-block a:hover {
+            text-decoration: underline;
+        }
+
+        /* small print / footer note */
+        .footer-note {
+            font-size: 0.875rem;
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            body {
+                padding: 0.75rem;
+            }
+            .policy-container {
+                padding: 1.5rem 1.25rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="policy-container">
+        <!-- Theme toggle button -->
+        <div class="theme-toggle">
+            <button id="themeToggle" aria-label="Toggle dark/light mode">
+                <span class="icon" id="themeIcon">☀️</span>
+                <span id="themeText">Light mode</span>
+            </button>
+        </div>
+
+        <!-- Main content -->
+        <h1>Privacy Policy</h1>
+        <div class="effective-date"><strong>Effective Date:</strong> February 10, 2025</div>
+
+        <p>The Write Choice Docs LLC ("Company," "we," "us," or "our") respects your privacy and is committed to protecting it through this Privacy Policy. This policy describes the types of information we may collect from you or that you may provide when you visit the website TWCD.us (our "Site") and our practices for collecting, using, maintaining, protecting, and disclosing that information.</p>
+
+        <h2>Information We Collect</h2>
+        <p>We may collect several types of information from and about users of our Site, including:</p>
+        <ul>
+            <li><strong>Personal Information:</strong> Identifiable information such as your name, email address, mailing address, phone number, and payment details.</li>
+            <li><strong>Usage Data:</strong> Non-personal information about your internet connection, including your IP address, browser type, and the pages of our Site you visit.</li>
+            <li><strong>Cookies and Tracking Technologies:</strong> We use cookies and similar technologies to enhance user experience, analyze site traffic, and personalize content.</li>
+        </ul>
+
+        <h2>How We Use Your Information</h2>
+        <p>We use the information we collect to:</p>
+        <ul>
+            <li>Provide, operate, and maintain our services.</li>
+            <li>Improve, personalize, and expand our Site.</li>
+            <li>Communicate with you, including for customer service, updates, and marketing purposes.</li>
+            <li>Process your transactions and manage your account.</li>
+            <li>Analyze usage patterns to better understand how our services are used.</li>
+        </ul>
+
+        <h2>Sharing Your Information</h2>
+        <p>We may disclose your personal information:</p>
+        <ul>
+            <li><strong>To Service Providers:</strong> To third-party vendors who host our Site, process payments, and perform analytics to help us operate our business.</li>
+            <li><strong>For Legal Purposes:</strong> To comply with any court order, law, or legal process, including responding to any government or regulatory request.</li>
+            <li><strong>In a Business Transfer:</strong> In connection with a merger, acquisition, or sale of all or a portion of our assets.</li>
+        </ul>
+
+        <h2>Data Security</h2>
+        <p>We have implemented measures designed to secure your personal information from accidental loss and from unauthorized access, use, alteration, and disclosure. However, the transmission of information via the internet is not completely secure. Although we strive to protect your personal data, we cannot guarantee its absolute security.</p>
+
+        <h2>Your Rights and Choices</h2>
+        <p>You have certain rights regarding the personal information we hold about you:</p>
+        <ul>
+            <li><strong>Access and Portability:</strong> You may request a copy of the personal data we hold about you.</li>
+            <li><strong>Correction:</strong> You can request that we correct any inaccurate or incomplete data.</li>
+            <li><strong>Deletion:</strong> You may ask us to delete your personal information, subject to certain legal exceptions.</li>
+            <li><strong>Opt-Out:</strong> You can unsubscribe from marketing emails by following the instructions in those emails.</li>
+        </ul>
+
+        <h2>Cookies and Tracking Technologies</h2>
+        <p>We use cookies to improve your experience on our Site. You can choose to disable cookies through your browser settings; however, doing so may affect the functionality of the Site. For more information, please see our Cookie Policy.</p>
+
+        <h2>Third-Party Links</h2>
+        <p>Our Site may contain links to third-party websites. We are not responsible for the privacy practices or the content of these external sites. We encourage you to review the privacy policies of any third-party sites you visit.</p>
+
+        <h2>Children's Privacy</h2>
+        <p>Our Site is not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13. If you believe we might have any information from or about a child under 13, please contact us immediately.</p>
+
+        <h2>International Data Transfers</h2>
+        <p>Your information may be transferred to and maintained on servers or databases located outside your state, province, country, or other governmental jurisdiction. If you are located outside the United States, please be aware that we may transfer your information to and process it in the United States.</p>
+
+        <h2>DMCA Compliance</h2>
+        <p>We respect the intellectual property rights of others. We will respond to valid notices of copyright infringement submitted pursuant to the Digital Millennium Copyright Act (DMCA). If you believe your work has been copied in a way that constitutes copyright infringement, please contact us. If you believe a notice of copyright infringement has been filed against you in error, you may file a counter-notice.</p>
+
+        <div class="contact-block">
+            <h2 style="margin-top: 0; border-left: none; padding-left: 0;">Contact Us</h2>
+            <p>If you have any questions about this Privacy Policy or our data practices, please contact us at:</p>
+            <p><strong>The Write Choice Docs LLC</strong><br>
+            <a href="mailto:ContactUs@WriteChoiceDocs.Email">ContactUs@WriteChoiceDocs.Email</a></p>
+        </div>
+
+        <hr>
+        <div class="footer-note">
+            © 2025 The Write Choice Docs LLC. All rights reserved.
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const toggleButton = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            const body = document.body;
+
+            // Function to set theme based on current state
+            function setTheme(theme) {
+                if (theme === 'dark') {
+                    body.classList.add('dark');
+                    body.classList.remove('light');
+                    themeIcon.textContent = '🌙';
+                    themeText.textContent = 'Dark mode';
+                } else {
+                    body.classList.remove('dark');
+                    body.classList.add('light');
+                    themeIcon.textContent = '☀️';
+                    themeText.textContent = 'Light mode';
+                }
+                // Save preference
+                localStorage.setItem('theme', theme);
+            }
+
+            // Check for saved preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                setTheme('dark');
+            } else if (savedTheme === 'light') {
+                setTheme('light');
+            } else {
+                // No saved preference: check system, but we don't set a class initially (respects media query)
+                // However, we want the button to reflect the actual current theme.
+                // We'll determine if system is dark
+                const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (systemDark) {
+                    // body has no class, but effectively dark via media query
+                    // Set button to dark mode indication
+                    themeIcon.textContent = '🌙';
+                    themeText.textContent = 'Dark mode';
+                } else {
+                    themeIcon.textContent = '☀️';
+                    themeText.textContent = 'Light mode';
+                }
+                // Ensure no class overrides media query
+                body.classList.remove('dark', 'light');
+            }
+
+            // Toggle click
+            toggleButton.addEventListener('click', () => {
+                if (body.classList.contains('dark')) {
+                    setTheme('light');
+                } else if (body.classList.contains('light')) {
+                    // If currently light, go to dark
+                    setTheme('dark');
+                } else {
+                    // No class: follow system, but we need to decide which way toggling goes.
+                    // Determine current effective theme (system)
+                    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    if (systemDark) {
+                        // Currently dark via system → toggle to light
+                        setTheme('light');
+                    } else {
+                        // Currently light via system → toggle to dark
+                        setTheme('dark');
+                    }
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

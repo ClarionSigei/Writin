@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+    <h1>Order #{{ order.order_id_string }}</h1>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+</section>
+
+<div class="order-details">
+    <p><strong>Order ID:</strong> {{ order.order_id_string }}</p>
+    <p><strong>Student Name:</strong> {{ order.student_name }}</p>
+    <p><strong>Class Name:</strong> {{ order.class_name }}</p>
+    <p><strong>Email:</strong> 
+        {% if order.user_id %}
+            {% set user = order.user_id and User.query.get(order.user_id) %}
+            {{ user.email if user else 'N/A' }}
+        {% else %}
+            {{ order.guest_email or 'N/A' }}
+        {% endif %}
+    </p>
+    <p><strong>Pages:</strong> {{ order.pages }}</p>
+    <p><strong>Deadline:</strong> {{ order.deadline }}</p>
+    <p><strong>Total:</strong> ${{ order.total }}</p>
+    <p><strong>Partial Paid:</strong> {% if order.partial_paid %}Yes{% else %}No{% endif %}</p>
+    <p><strong>Full Paid:</strong> {% if order.full_paid %}Yes{% else %}No{% endif %}</p>
+    <p><strong>Status:</strong> {{ order.status }}</p>
+</div>
+
+<!-- Instructions Section -->
+<div class="order-instructions">
+    <h3>Instructions Provided</h3>
+    {% if order.instructions_file %}
+        <p><strong>Uploaded File:</strong> 
+            <a href="{{ url_for('download_instructions', order_id=order.id) }}" target="_blank">View File</a>
+        </p>
+    {% endif %}
+    {% if order.instructions_link %}
+        <p><strong>Link:</strong> 
+            <a href="{{ order.instructions_link }}" target="_blank">{{ order.instructions_link }}</a>
+        </p>
+    {% endif %}
+    {% if order.instructions_text %}
+        <p><strong>Pasted Text:</strong></p>
+        <pre>{{ order.instructions_text }}</pre>
+    {% endif %}
+    {% if not order.instructions_file and not order.instructions_link and not order.instructions_text %}
+        <p>No instructions provided.</p>
+    {% endif %}
+</div>
+
+<div class="form-container">
+    <form method="post" enctype="multipart/form-data" class="styled-form">
+        <div class="form-actions-group">
+            <button type="submit" name="mark_partial" value="1" class="btn btn-primary">Mark 50% Paid</button>
+            <button type="submit" name="mark_full" value="1" class="btn btn-success">Mark Full Paid</button>
+        </div>
+
+        <div class="form-row">
+            <label for="file">Upload Completed File</label>
+            <input type="file" name="file" id="file">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </div>
+    </form>
+</div>
+
+{% if order.completed_file and order.full_paid %}
+    <div class="download-section">
+        <a href="{{ url_for('download', order_id=order.id) }}" class="btn btn-success"><i class="fas fa-download"></i> Download File</a>
+    </div>
+{% endif %}
+
+<!-- Delete Form -->
+<div class="form-container" style="margin-top: 2rem;">
+    <form method="post" action="{{ url_for('admin_delete_order', order_type='essay', order_id=order.id) }}" class="styled-form delete-form">
+        <div class="form-row">
+            <label>
+                <input type="checkbox" name="delete_files" value="yes"> Also delete associated files
+            </label>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this order? This action cannot be undone.')">Delete Order</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

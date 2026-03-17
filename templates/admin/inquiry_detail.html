@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+    <h1>Book Class Inquiry #{{ inquiry.order_id_string }}</h1>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+</section>
+
+<div class="request-details">
+    <p><strong>Inquiry ID:</strong> {{ inquiry.order_id_string }}</p>
+    <p><strong>Email:</strong> 
+        {% if inquiry.user_id %}
+            {% set user = User.query.get(inquiry.user_id) %}
+            {{ user.email if user else 'N/A' }}
+        {% else %}
+            {{ inquiry.guest_email or 'N/A' }}
+        {% endif %}
+    </p>
+    <p><strong>Subject/Course:</strong> {{ inquiry.subject }}</p>
+    <p><strong>Level:</strong> {{ inquiry.level }}</p>
+    <p><strong>Assignments Count:</strong> {{ inquiry.assignments_count }}</p>
+    <p><strong>Communication Frequency:</strong> {{ inquiry.frequency or 'Not specified' }}</p>
+    <p><strong>Status:</strong> {{ inquiry.status }}</p>
+    <p><strong>Submitted:</strong> {{ inquiry.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+    {% if inquiry.quoted_price %}
+        <p><strong>Quoted Price:</strong> ${{ inquiry.quoted_price }}</p>
+    {% endif %}
+    {% if inquiry.user_accepted %}
+        <p><strong>User Accepted:</strong> Yes</p>
+    {% endif %}
+    {% if inquiry.paid %}
+        <p><strong>Paid:</strong> Yes</p>
+    {% endif %}
+
+    {% if inquiry.details %}
+        <p><strong>Additional Details:</strong></p>
+        <div class="detail-box">{{ inquiry.details }}</div>
+    {% endif %}
+</div>
+
+<div class="form-container">
+    <form method="post" class="styled-form">
+        <div class="form-row">
+            <label for="status">Update Status</label>
+            <select name="status" id="status" onchange="toggleQuoteField()">
+                <option value="inquiry" {% if inquiry.status == 'inquiry' %}selected{% endif %}>Inquiry</option>
+                <option value="contacted" {% if inquiry.status == 'contacted' %}selected{% endif %}>Contacted</option>
+                <option value="quoted" {% if inquiry.status == 'quoted' %}selected{% endif %}>Quoted</option>
+                <option value="accepted" {% if inquiry.status == 'accepted' %}selected{% endif %}>Accepted</option>
+                <option value="paid" {% if inquiry.status == 'paid' %}selected{% endif %}>Paid</option>
+            </select>
+        </div>
+
+        <div class="form-row" id="quote-price-field" style="display: {% if inquiry.status == 'quoted' %}block{% else %}none{% endif %};">
+            <label for="quoted_price">Quoted Price ($)</label>
+            <input type="number" step="0.01" name="quoted_price" id="quoted_price" value="{{ inquiry.quoted_price or '' }}">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Update Inquiry</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function toggleQuoteField() {
+        const status = document.getElementById('status').value;
+        const quoteField = document.getElementById('quote-price-field');
+        if (status === 'quoted') {
+            quoteField.style.display = 'block';
+        } else {
+            quoteField.style.display = 'none';
+        }
+    }
+</script>
+
+<!-- Delete Form -->
+<div class="form-container" style="margin-top: 2rem;">
+    <form method="post" action="{{ url_for('admin_delete_order', order_type='book', order_id=inquiry.id) }}" class="styled-form delete-form">
+        <div class="form-row">
+            <label>
+                <input type="checkbox" name="delete_files" value="yes"> Also delete associated files
+            </label>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this inquiry? This action cannot be undone.')">Delete Inquiry</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

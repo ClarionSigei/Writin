@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+    <h1><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+    <div class="admin-actions">
+        <a href="{{ url_for('admin_logout') }}" class="btn btn-secondary">Logout</a>
+        <a href="{{ url_for('admin_payments') }}" class="btn btn-primary"><i class="fas fa-credit-card"></i> Verify Payments</a>
+        <form method="post" action="{{ url_for('admin_cleanup') }}" style="display: inline;">
+            <button type="submit" class="btn btn-warning" onclick="return confirm('Run cleanup? This will archive old orders.')">Run Cleanup</button>
+        </form>
+    </div>
+</section>
+
+<!-- Essay Orders Section -->
+<section class="admin-section">
+    <h2>Essay Orders</h2>
+    <div class="table-responsive">
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Order ID</th>
+                    <th>Student</th>
+                    <th>Pages</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Partial Paid</th>
+                    <th>Full Paid</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in essays %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.order_id_string }}</td>
+                    <td>{{ order.student_name }}</td>
+                    <td>{{ order.pages }}</td>
+                    <td>${{ order.total }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>{% if order.partial_paid %}<i class="fas fa-check" style="color: var(--secondary-color);"></i>{% else %}<i class="fas fa-times" style="color: #ef4444;"></i>{% endif %}</td>
+                    <td>{% if order.full_paid %}<i class="fas fa-check" style="color: var(--secondary-color);"></i>{% else %}<i class="fas fa-times" style="color: #ef4444;"></i>{% endif %}</td>
+                    <td><a href="{{ url_for('admin_order', order_id=order.id) }}" class="btn btn-small">View</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- General Assignment Requests Section -->
+<section class="admin-section">
+    <h2>General Assignment Requests</h2>
+    <div class="table-responsive">
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Order ID</th>
+                    <th>Description</th>
+                    <th>Subject</th>
+                    <th>Quoted Price</th>
+                    <th>Status</th>
+                    <th>Paid</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in generals %}
+                <tr>
+                    <td>{{ req.id }}</td>
+                    <td>{{ req.order_id_string }}</td>
+                    <td>{{ req.description[:50] }}{% if req.description|length > 50 %}...{% endif %}</td>
+                    <td>{{ req.subject or 'N/A' }}</td>
+                    <td>{% if req.quoted_price %}${{ req.quoted_price }}{% else %}--{% endif %}</td>
+                    <td>{{ req.status }}</td>
+                    <td>{% if req.paid %}<i class="fas fa-check" style="color: var(--secondary-color);"></i>{% else %}<i class="fas fa-times" style="color: #ef4444;"></i>{% endif %}</td>
+                    <td><a href="{{ url_for('admin_general', req_id=req.id) }}" class="btn btn-small">View</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Book Class Inquiries Section -->
+<section class="admin-section">
+    <h2>Book Class Inquiries</h2>
+    <div class="table-responsive">
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Order ID</th>
+                    <th>Subject</th>
+                    <th>Level</th>
+                    <th>Assignments</th>
+                    <th>Quoted Price</th>
+                    <th>Status</th>
+                    <th>Paid</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inquiry in books %}
+                <tr>
+                    <td>{{ inquiry.id }}</td>
+                    <td>{{ inquiry.order_id_string }}</td>
+                    <td>{{ inquiry.subject }}</td>
+                    <td>{{ inquiry.level }}</td>
+                    <td>{{ inquiry.assignments_count }}</td>
+                    <td>{% if inquiry.quoted_price %}${{ inquiry.quoted_price }}{% else %}--{% endif %}</td>
+                    <td>{{ inquiry.status }}</td>
+                    <td>{% if inquiry.paid %}<i class="fas fa-check" style="color: var(--secondary-color);"></i>{% else %}<i class="fas fa-times" style="color: #ef4444;"></i>{% endif %}</td>
+                    <td><a href="{{ url_for('admin_inquiry', inquiry_id=inquiry.id) }}" class="btn btn-small">View</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
