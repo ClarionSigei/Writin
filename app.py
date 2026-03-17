@@ -970,7 +970,12 @@ def send_admin_message(order_type, order_id):
     flash('Message sent.', 'success')
     return redirect(request.referrer)
 
+# ... (all previous code remains the same, only the bottom part changes)
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    # Get port from environment variable (Render sets PORT) or default to 5000
+    port = int(os.environ.get('PORT', 5000))
+    # Bind to 0.0.0.0 to accept connections from outside the container
+    app.run(host='0.0.0.0', port=port, debug=False)
