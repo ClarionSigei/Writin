@@ -12,10 +12,10 @@
             <textarea name="description" id="description" rows="5" placeholder="Describe your assignment in detail..." required></textarea>
         </div>
 
-        <!-- Submission Method Selection -->
+        <!-- Submission Method Selection - Now in two columns -->
         <div class="form-row">
             <label>How would you like to provide your assignment?</label>
-            <div class="radio-group submission-type">
+            <div class="radio-grid two-col">
                 <label class="radio-label">
                     <input type="radio" name="submission_type" value="file" id="sub-file-radio"> <i class="fas fa-upload"></i> Upload File
                 </label>
@@ -62,8 +62,8 @@
         </div>
 
         <div class="form-row">
-            <label for="deadline">Preferred Deadline (optional)</label>
-            <input type="text" name="deadline" id="deadline" placeholder="e.g., 3 days, next week">
+            <label for="deadline">Preferred Deadline <span class="required">*</span></label>
+            <input type="text" name="deadline" id="deadline" placeholder="e.g., 3 days, next week" required>
         </div>
 
         <!-- Guest email field (shown only if user not logged in) -->
@@ -81,33 +81,32 @@
 </div>
 
 <script>
-    // Conditional submission fields
     const submissionRadios = document.querySelectorAll('input[name="submission_type"]');
     const fileSubField = document.getElementById('file-sub-field');
     const linkSubField = document.getElementById('link-sub-field');
     const textSubField = document.getElementById('text-sub-field');
     
-    // File input display
-    document.getElementById('file').addEventListener('change', function(e) {
-        const fileName = e.target.files[0] ? e.target.files[0].name : 'Choose file...';
-        document.querySelectorAll('#file-sub-field .file-custom').forEach(el => {
-            el.textContent = fileName;
+    // File input display - with null check
+    const fileInput = document.getElementById('file');
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'Choose file...';
+            const customSpan = document.querySelector('#file-sub-field .file-custom');
+            if (customSpan) customSpan.textContent = fileName;
         });
-    });
+    }
 
     submissionRadios.forEach(radio => {
         radio.addEventListener('change', function() {
-            // Hide all fields
-            fileSubField.style.display = 'none';
-            linkSubField.style.display = 'none';
-            textSubField.style.display = 'none';
+            if (fileSubField) fileSubField.style.display = 'none';
+            if (linkSubField) linkSubField.style.display = 'none';
+            if (textSubField) textSubField.style.display = 'none';
             
-            // Show selected field
-            if (this.value === 'file') {
+            if (this.value === 'file' && fileSubField) {
                 fileSubField.style.display = 'block';
-            } else if (this.value === 'link') {
+            } else if (this.value === 'link' && linkSubField) {
                 linkSubField.style.display = 'block';
-            } else if (this.value === 'text') {
+            } else if (this.value === 'text' && textSubField) {
                 textSubField.style.display = 'block';
             }
         });

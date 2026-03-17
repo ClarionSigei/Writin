@@ -1,4 +1,4 @@
-/* CSS Variables for Light/Dark Themes */
+/* CSS Variables for Light/Dark Themes and Color Themes */
 :root {
     --bg-color: #f8fafc;
     --surface-color: #ffffff;
@@ -33,6 +33,76 @@
     --warning: #fbbf24;
     --success: #6ee7b7;
     --info: #93c5fd;
+}
+
+/* Theme: Purple */
+.theme-purple {
+    --primary-color: #8b5cf6;
+    --secondary-color: #a78bfa;
+}
+.dark-theme.theme-purple {
+    --primary-color: #a78bfa;
+    --secondary-color: #c4b5fd;
+}
+
+/* Theme: Cyber Blue/Cyan */
+.theme-cyber {
+    --primary-color: #06b6d4;
+    --secondary-color: #22d3ee;
+}
+.dark-theme.theme-cyber {
+    --primary-color: #22d3ee;
+    --secondary-color: #67e8f9;
+}
+
+/* Theme: Magenta/Violet */
+.theme-magenta {
+    --primary-color: #d946ef;
+    --secondary-color: #e879f9;
+}
+.dark-theme.theme-magenta {
+    --primary-color: #e879f9;
+    --secondary-color: #f0abfc;
+}
+
+/* Theme: Teal/Emerald */
+.theme-teal {
+    --primary-color: #14b8a6;
+    --secondary-color: #2dd4bf;
+}
+.dark-theme.theme-teal {
+    --primary-color: #2dd4bf;
+    --secondary-color: #5eead4;
+}
+
+/* Theme: Amber/Gold */
+.theme-amber {
+    --primary-color: #f59e0b;
+    --secondary-color: #fbbf24;
+}
+.dark-theme.theme-amber {
+    --primary-color: #fbbf24;
+    --secondary-color: #fcd34d;
+}
+
+/* Theme: Red Neon */
+.theme-red {
+    --primary-color: #ef4444;
+    --secondary-color: #f87171;
+}
+.dark-theme.theme-red {
+    --primary-color: #f87171;
+    --secondary-color: #fca5a5;
+}
+
+/* Theme: Mono Neon */
+.theme-mono {
+    --primary-color: #6b7280;
+    --secondary-color: #10b981;
+}
+.dark-theme.theme-mono {
+    --primary-color: #9ca3af;
+    --secondary-color: #34d399;
 }
 
 * {
@@ -96,11 +166,23 @@ header {
     display: flex;
     align-items: center;
     gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .datetime {
     font-size: 0.9rem;
     color: var(--text-secondary);
+}
+
+.theme-selector {
+    background: var(--surface-color);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.9rem;
+    cursor: pointer;
 }
 
 .theme-toggle {
@@ -452,7 +534,7 @@ main {
     color: var(--primary-color);
 }
 
-/* Floating Contact Button - Fixed Hover */
+/* Floating Contact Button */
 .contact-wrapper {
     position: fixed;
     bottom: 20px;
@@ -522,6 +604,11 @@ footer {
     text-align: center;
     padding: 1.5rem;
     margin-top: 2rem;
+}
+
+footer a {
+    color: var(--footer-text);
+    text-decoration: underline;
 }
 
 /* Flash Messages */
@@ -993,6 +1080,87 @@ footer {
     color: var(--text-primary);
 }
 
+/* Two-column radio grid for mobile */
+.radio-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.radio-grid.two-col {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+}
+@media (min-width: 768px) {
+    .radio-grid.two-col {
+        grid-template-columns: repeat(4, auto);
+        gap: 1.5rem;
+    }
+}
+
+/* Recommended badge for payment card */
+.payment-card.recommended {
+    position: relative;
+    border: 2px solid var(--secondary-color);
+}
+.recommended-badge {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 0.2rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* Message thread styling */
+.message-thread {
+    background: var(--surface-color);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    box-shadow: var(--shadow);
+}
+.messages {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+.message {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+}
+.admin-message {
+    background-color: #e3f2fd;
+    text-align: right;
+}
+.user-message {
+    background-color: #f1f1f1;
+    text-align: left;
+}
+.dark-theme .admin-message {
+    background-color: #1e3a5f;
+}
+.dark-theme .user-message {
+    background-color: #2d2d2d;
+}
+.message small {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+.message-form {
+    margin-top: 1rem;
+}
+
 /* Responsive Design */
 @media (max-width: 1023px) {
     .desktop-nav {
@@ -1071,5 +1239,13 @@ footer {
     .radio-group {
         flex-direction: column;
         gap: 0.75rem;
+    }
+
+    .header-right {
+        gap: 0.5rem;
+    }
+    .theme-selector {
+        font-size: 0.8rem;
+        padding: 0.2rem 0.3rem;
     }
 }

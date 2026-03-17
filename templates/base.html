@@ -30,6 +30,20 @@
 
         <div class="header-right">
             <div class="datetime" id="datetime"></div>
+            
+            <!-- Theme Selector Dropdown -->
+            <select id="theme-selector" class="theme-selector">
+                <option value="default">Default White</option>
+                <option value="purple">Purple</option>
+                <option value="cyber">Cyber Blue/Cyan</option>
+                <option value="magenta">Magenta/Violet</option>
+                <option value="teal">Teal/Emerald</option>
+                <option value="amber">Amber/Gold</option>
+                <option value="red">Red Neon</option>
+                <option value="mono">Mono Neon</option>
+            </select>
+
+            <!-- Light/Dark Toggle -->
             <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
                 <i class="fas fa-sun"></i>
                 <i class="fas fa-moon"></i>
@@ -81,7 +95,7 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Floating Contact Button (fixed hover) -->
+    <!-- Floating Contact Button -->
     <div class="contact-wrapper">
         <div class="contact-button" id="contactButton">
             <div class="contact-icon"><i class="fas fa-comment"></i></div>
@@ -92,12 +106,12 @@
         </div>
     </div>
 
-   <footer>
-    <p>&copy; 2026 Online Writing Website. All rights reserved.</p>
-    <p>
-        <a href="{{ url_for('privacy') }}">Privacy Policy</a> | 
-        <a href="{{ url_for('terms') }}">Terms of Service</a>
-    </p>
-</footer>
+    <footer>
+        <p>&copy; 2026 Online Writing Website. All rights reserved.</p>
+        <p>
+            <a href="{{ url_for('privacy') }}">Privacy Policy</a> | 
+            <a href="{{ url_for('terms') }}">Terms of Service</a>
+        </p>
+    </footer>
 </body>
 </html>

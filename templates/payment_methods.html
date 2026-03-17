@@ -6,6 +6,16 @@
 </section>
 
 <div class="payment-cards">
+    <!-- CashApp first with recommended tag -->
+    <div class="payment-card recommended">
+        <span class="recommended-badge">Recommended</span>
+        <i class="fab fa-cashapp"></i>
+        <h3>CashApp</h3>
+        <p>Send to $Cashtag:</p>
+        <code>$YourCashtag</code>
+        <a href="https://cash.app/$YourCashtag" target="_blank" class="btn btn-secondary">Pay via CashApp</a>
+    </div>
+    
     <div class="payment-card">
         <i class="fab fa-paypal"></i>
         <h3>PayPal</h3>
@@ -13,13 +23,7 @@
         <code>youremail@example.com</code>
         <a href="https://paypal.me/yourlink" target="_blank" class="btn btn-secondary">Pay via PayPal</a>
     </div>
-    <div class="payment-card">
-        <i class="fab fa-cashapp"></i>
-        <h3>CashApp</h3>
-        <p>Send to $Cashtag:</p>
-        <code>$YourCashtag</code>
-        <a href="https://cash.app/$YourCashtag" target="_blank" class="btn btn-secondary">Pay via CashApp</a>
-    </div>
+    
     <div class="payment-card">
         <i class="fab fa-binance"></i>
         <h3>Binance Pay</h3>
@@ -31,6 +35,6 @@
 </div>
 
 <div class="payment-note">
-    <p><i class="fas fa-info-circle"></i> After sending payment, please notify us via WhatsApp or email with your order ID to confirm. For essays, your order will begin once we confirm the 50% deposit.</p>
+    <p><i class="fas fa-info-circle"></i> After sending payment, please submit your proof via the order tracking page. Admin will verify your payment.</p>
 </div>
 {% endblock %}

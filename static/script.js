@@ -1,8 +1,8 @@
-// Theme toggle
+// Theme toggle (light/dark)
 const themeToggle = document.getElementById('theme-toggle');
 const body = document.body;
 
-// Check for saved theme preference
+// Check for saved light/dark theme preference
 const savedTheme = localStorage.getItem('theme');
 if (savedTheme === 'dark') {
     body.classList.add('dark-theme');
@@ -22,6 +22,26 @@ themeToggle.addEventListener('click', () => {
     } else {
         localStorage.setItem('theme', 'light');
     }
+});
+
+// Color theme selector
+const themeSelector = document.getElementById('theme-selector');
+const savedColorTheme = localStorage.getItem('color-theme') || 'default';
+
+// Apply saved color theme
+if (savedColorTheme !== 'default') {
+    body.classList.add(`theme-${savedColorTheme}`);
+    themeSelector.value = savedColorTheme;
+}
+
+themeSelector.addEventListener('change', function() {
+    // Remove all theme classes
+    const themeClasses = ['theme-purple', 'theme-cyber', 'theme-magenta', 'theme-teal', 'theme-amber', 'theme-red', 'theme-mono'];
+    body.classList.remove(...themeClasses);
+    if (this.value !== 'default') {
+        body.classList.add(`theme-${this.value}`);
+    }
+    localStorage.setItem('color-theme', this.value);
 });
 
 // Mobile menu toggle
@@ -139,7 +159,7 @@ if (pagesInput && deadlineSelect && totalPriceSpan) {
     calculateTotal(); // initial
 }
 
-// Confirm deletion in admin (optional)
+// Confirm deletion in admin
 document.querySelectorAll('.delete-form').forEach(form => {
     form.addEventListener('submit', function(e) {
         if (!confirm('Are you sure you want to delete this order? This action cannot be undone.')) {

@@ -37,8 +37,37 @@
     {% endif %}
 </div>
 
+<!-- Message Thread -->
+<div class="message-thread">
+    <h3>Messages</h3>
+    <div class="messages">
+        {% for msg in messages %}
+            <div class="message {% if msg.sender_type == 'admin' %}admin-message{% else %}user-message{% endif %}">
+                <strong>{% if msg.sender_type == 'admin' %}Admin{% else %}User{% endif %}:</strong>
+                <p>{{ msg.content }}</p>
+                <small>{{ msg.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+            </div>
+        {% else %}
+            <p>No messages yet.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Admin Reply Form -->
+    <form method="post" class="message-form">
+        <input type="hidden" name="action" value="message">
+        <div class="form-row">
+            <label for="message">Reply as Admin</label>
+            <textarea name="message" id="message" rows="3" required></textarea>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Send Message</button>
+        </div>
+    </form>
+</div>
+
 <div class="form-container">
     <form method="post" class="styled-form">
+        <input type="hidden" name="action" value="update">
         <div class="form-row">
             <label for="status">Update Status</label>
             <select name="status" id="status" onchange="toggleQuoteField()">
@@ -86,4 +115,49 @@
         </div>
     </form>
 </div>
+
+<style>
+    .message-thread {
+        background: var(--surface-color);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        box-shadow: var(--shadow);
+    }
+    .messages {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid var(--border-color);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    .message {
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+    }
+    .admin-message {
+        background-color: #e3f2fd;
+        text-align: right;
+    }
+    .user-message {
+        background-color: #f1f1f1;
+        text-align: left;
+    }
+    .dark-theme .admin-message {
+        background-color: #1e3a5f;
+    }
+    .dark-theme .user-message {
+        background-color: #2d2d2d;
+    }
+    .message small {
+        display: block;
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+    }
+    .message-form {
+        margin-top: 1rem;
+    }
+</style>
 {% endblock %}
