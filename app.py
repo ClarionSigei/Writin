@@ -932,6 +932,7 @@ def download_general(req_id):
         return redirect(url_for('track_order'))
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True)
+    port = int(os.getenv('PORT', 5000))
+    debug = os.getenv('FLASK_ENV', 'development') == 'development'
+    
+    app.run(debug=debug, port=port)
