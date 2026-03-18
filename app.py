@@ -127,10 +127,13 @@ def essay():
         db.session.commit()
 
         recipient = user.email if user else guest_email
-        send_simulated_email(recipient, f"Essay Order Confirmation - {order_id_string}",
-                             f"Thank you for your order.\n\nOrder ID: {order_id_string}\nTotal: ${total}\n\nYou can track your order at: {url_for('track_order', _external=True)}")
+        send_email(recipient, f"Essay Order Confirmation - {order_id_string}",
+                   f"Thank you for your order.\n\nOrder ID: {order_id_string}\nTotal: ${total}\n\nYou can track your order at: {url_for('track_order', _external=True)}")
 
         session['pending_order'] = {'id': order.id, 'type': 'essay', 'amount_partial': total * 0.5}
+        
+        # Updated flash message with order ID
+        flash(f'Order submitted successfully! Your order ID is {order_id_string}. You will be redirected to payment.', 'success')
         return redirect(url_for('payment'))
 
     return render_template('essay.html', user=user)
@@ -186,10 +189,11 @@ def general():
         db.session.commit()
 
         recipient = user.email if user else guest_email
-        send_simulated_email(recipient, f"General Assignment Request - {order_id_string}",
-                             f"We received your request.\n\nRequest ID: {order_id_string}\n\nWe will contact you with a quote shortly.\n\nTrack your request: {url_for('track_order', _external=True)}")
+        send_email(recipient, f"General Assignment Request - {order_id_string}",
+                   f"We received your request.\n\nRequest ID: {order_id_string}\n\nWe will contact you with a quote shortly.\n\nTrack your request: {url_for('track_order', _external=True)}")
 
-        flash('Your request has been submitted. We will contact you with a quote shortly.', 'success')
+        # Updated flash message with order ID
+        flash(f'Request submitted successfully! Your request ID is {order_id_string}. We will contact you with a quote shortly.', 'success')
         return redirect(url_for('index'))
     return render_template('general.html', user=user)
 
@@ -222,10 +226,11 @@ def book_class():
         db.session.commit()
 
         recipient = user.email if user else guest_email
-        send_simulated_email(recipient, f"Book Class Inquiry - {order_id_string}",
-                             f"Thank you for your inquiry.\n\nInquiry ID: {order_id_string}\n\nWe will contact you to discuss a tailored plan.\n\nTrack your inquiry: {url_for('track_order', _external=True)}")
+        send_email(recipient, f"Book Class Inquiry - {order_id_string}",
+                   f"Thank you for your inquiry.\n\nInquiry ID: {order_id_string}\n\nWe will contact you to discuss a tailored plan.\n\nTrack your inquiry: {url_for('track_order', _external=True)}")
 
-        flash('Your inquiry has been sent. We will contact you to discuss a tailored plan.', 'success')
+        # Updated flash message with order ID
+        flash(f'Inquiry submitted successfully! Your inquiry ID is {order_id_string}. We will contact you to discuss a tailored plan.', 'success')
         return redirect(url_for('index'))
     return render_template('book_class.html', user=user)
 
