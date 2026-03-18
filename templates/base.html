@@ -30,20 +30,6 @@
 
         <div class="header-right">
             <div class="datetime" id="datetime"></div>
-            
-            <!-- Theme Selector Dropdown -->
-            <select id="theme-selector" class="theme-selector">
-                <option value="default">Default White</option>
-                <option value="purple">Purple</option>
-                <option value="cyber">Cyber Blue/Cyan</option>
-                <option value="magenta">Magenta/Violet</option>
-                <option value="teal">Teal/Emerald</option>
-                <option value="amber">Amber/Gold</option>
-                <option value="red">Red Neon</option>
-                <option value="mono">Mono Neon</option>
-            </select>
-
-            <!-- Light/Dark Toggle -->
             <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
                 <i class="fas fa-sun"></i>
                 <i class="fas fa-moon"></i>
@@ -95,7 +81,7 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Floating Contact Button -->
+    <!-- Floating Contact Button (fixed hover) -->
     <div class="contact-wrapper">
         <div class="contact-button" id="contactButton">
             <div class="contact-icon"><i class="fas fa-comment"></i></div>
@@ -106,12 +92,41 @@
         </div>
     </div>
 
-    <footer>
-        <p>&copy; 2026 Online Writing Website. All rights reserved.</p>
-        <p>
-            <a href="{{ url_for('privacy') }}">Privacy Policy</a> | 
-            <a href="{{ url_for('terms') }}">Terms of Service</a>
-        </p>
+    <!-- Professional Footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>OnlineWriting</h4>
+                <p>Your trusted partner for academic writing, assignments, and test preparation.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('essay') }}">Essay</a></li>
+                    <li><a href="{{ url_for('general') }}">General Assignment</a></li>
+                    <li><a href="{{ url_for('book_class') }}">Book a Class</a></li>
+                    <li><a href="{{ url_for('payment_methods') }}">Payment Methods</a></li>
+                    <li><a href="{{ url_for('track_order') }}">Track Order</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+                    <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Online Writing Website. All rights reserved.</p>
+            <p>
+                <a href="{{ url_for('privacy') }}">Privacy Policy</a> | 
+                <a href="{{ url_for('terms') }}">Terms of Service</a>
+            </p>
+        </div>
     </footer>
 </body>
 </html>

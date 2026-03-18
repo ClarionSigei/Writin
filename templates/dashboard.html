@@ -19,9 +19,60 @@
 </section>
 {% endif %}
 
-<!-- Orders -->
+<!-- Pending/Unpaid Orders Section -->
 <section class="dashboard-orders">
-    <h2>Your Orders</h2>
+    <h2>Pending Actions</h2>
+    {% set has_pending = false %}
+    {% for order in essays if order.status == 'pending_payment' or order.status == 'payment_pending' %}
+        {% set has_pending = true %}
+    {% endfor %}
+    {% for req in generals if req.status == 'quote_requested' or req.status == 'quoted' and not req.user_accepted %}
+        {% set has_pending = true %}
+    {% endfor %}
+    {% for inquiry in books if inquiry.status == 'inquiry' or inquiry.status == 'quoted' and not inquiry.user_accepted %}
+        {% set has_pending = true %}
+    {% endfor %}
+
+    {% if has_pending %}
+        <div class="pending-orders">
+            <!-- Essay pending payment -->
+            {% for order in essays if order.status == 'pending_payment' or order.status == 'payment_pending' %}
+            <div class="order-card pending">
+                <h4>Essay: {{ order.order_id_string }}</h4>
+                <p>Status: {{ order.status }}</p>
+                <p>Amount due: ${{ order.total * 0.5 if not order.partial_paid else order.total * 0.5 }}</p>
+                <a href="{{ url_for('view_order', order_type='essay', order_id=order.order_id_string) }}" class="btn btn-small">View & Pay</a>
+            </div>
+            {% endfor %}
+
+            <!-- General pending quote response -->
+            {% for req in generals if req.status == 'quoted' and not req.user_accepted %}
+            <div class="order-card pending">
+                <h4>General: {{ req.order_id_string }}</h4>
+                <p>Quote: ${{ req.quoted_price }}</p>
+                <p>Please accept or decline the quote.</p>
+                <a href="{{ url_for('view_order', order_type='general', order_id=req.order_id_string) }}" class="btn btn-small">Respond</a>
+            </div>
+            {% endfor %}
+
+            <!-- Book pending quote response -->
+            {% for inquiry in books if inquiry.status == 'quoted' and not inquiry.user_accepted %}
+            <div class="order-card pending">
+                <h4>Book Class: {{ inquiry.order_id_string }}</h4>
+                <p>Quote: ${{ inquiry.quoted_price }}</p>
+                <p>Please accept or decline the quote.</p>
+                <a href="{{ url_for('view_order', order_type='book', order_id=inquiry.order_id_string) }}" class="btn btn-small">Respond</a>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No pending actions.</p>
+    {% endif %}
+</section>
+
+<!-- All Orders -->
+<section class="dashboard-orders">
+    <h2>All Orders</h2>
     
     {% if essays or generals or books %}
         {% if essays %}
